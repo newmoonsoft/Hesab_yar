@@ -375,6 +375,18 @@
 <li>پشتیبان‌گیری خودکار + دستی</li>
 <li>فعال‌سازی لایسنس امن</li>
 </ul><p>پشتیبانی (تلگرام/واتساپ): 09353330966</p><p>بله: 09155070802</p><p>ایمیل: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95fbf0e2f8fafafbe6faf3e1bbe6e0e5e5fae7e1d5f2f8f4fcf9bbf6faf8">[email&#160;protected]</a></p></div></div>
+<div id="inputModal" class="modal" style="z-index:9999;">
+  <div class="modal-content" style="max-width:380px;">
+    <h3 id="inputModalTitle">ورودی</h3>
+    <div class="form-group" style="margin:14px 0;">
+      <input type="text" id="inputModalField" style="border-radius:28px; padding:10px 14px; border:1px solid #C9A03D; font-family:inherit; font-size:15px; width:100%; box-sizing:border-box;">
+    </div>
+    <div class="flex">
+      <button id="inputModalOk" style="flex:2;">✅ تأیید</button>
+      <button id="inputModalCancel" class="btn-secondary" style="flex:1;">لغو</button>
+    </div>
+  </div>
+</div>
 <div id="aboutModal" class="modal"><div class="modal-content"><span class="close-modal" id="closeAbout">&times;</span><h3>ℹ️ درباره ما</h3><p><strong>حساب یار</strong> نسخه ۳.۲</p><p>توسعه‌دهنده: نیومون</p><p>ارتباط با ما: 09353330966</p><p>ایمیل: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d33382a303232332e323b29732e282d2d322f291d3a303c3431733e3230">[email&#160;protected]</a></p><p>تمامی حقوق محفوظ است © ۱۴۰۳</p></div></div>
 <div id="privacyModal" class="modal"><div class="modal-content"><span class="close-modal" id="closePrivacy">&times;</span><h3>🔒 حریم خصوصی</h3><p>برنامه «حساب یار» اطلاعات شخصی کاربران را جمع‌آوری نمی‌کند. تمام داده‌ها فقط در حافظه داخلی گوشی ذخیره می‌شوند.</p><p>دسترسی‌های مورد نیاز: ذخیره‌سازی برای خروجی CSV/PDF.</p></div></div>
 
@@ -889,8 +901,8 @@
         saveAll(); loadProjectToUI(); cancelEdit(); clearDraft();
         document.getElementById('matName').focus();
     }
-    function newProject(){
-        let name=prompt("نام پروژه جدید");
+    async function newProject(){
+        let name = await showPrompt('نام پروژه جدید');
         if(!name) return;
         name = name.trim();
         if(!name || projects[name]){ alert("تکراری یا نامعتبر"); return;}
@@ -898,8 +910,8 @@
         currentProject=name;
         saveAll(); renderProjectList(); loadProjectToUI();
     }
-    function copyProject(){
-        let newName=prompt("نام پروژه کپی",`کپی ${currentProject}`);
+    async function copyProject(){
+        let newName = await showPrompt('نام پروژه کپی', `کپی ${currentProject}`);
         if(!newName) return;
         newName=newName.trim();
         if(!newName || projects[newName]){ alert("تکراری یا نامعتبر"); return;}
@@ -907,8 +919,8 @@
         currentProject=newName;
         saveAll(); renderProjectList(); loadProjectToUI();
     }
-    function renameProject(){
-        let newName=prompt("نام جدید",currentProject);
+    async function renameProject(){
+        let newName = await showPrompt('نام جدید', currentProject);
         if(!newName) return;
         newName=newName.trim();
         if(!newName || projects[newName]){ alert("تکراری یا نامعتبر"); return;}
@@ -926,13 +938,13 @@
             saveAll(); renderProjectList(); loadProjectToUI();
         }
     }
-    function showProfit(){
+    async function showProfit(){
         const items=projects[currentProject]?.items||[];
         if(!items.length){ alert("متریالی وارد نشده"); return; }
         const total=updateTotal();
-        let percent=prompt("درصد سود","30");
-        if(percent===null) return;
-        percent=parseFloat(toEnglishNumber(percent));
+        let percentStr = await showPrompt('درصد سود', '30');
+        if(percentStr===null) return;
+        let percent=parseFloat(toEnglishNumber(percentStr));
         if(isNaN(percent)) percent=0;
         const profit=total*percent/100;
         const finalPrice=total+profit;
@@ -970,12 +982,13 @@
         a.download=`hesabyar_${currentProject}.csv`; a.click();
         URL.revokeObjectURL(url); alert("CSV گرفته شد");
     }
-    function shareReport(){
+    async function shareReport(){
         const items=projects[currentProject]?.items||[];
         if(!items.length){ alert("متریالی وجود ندارد"); return; }
         const total=updateTotal();
-        const percent=prompt("درصد سود برای اشتراک","30");
-        if(percent===null) return;
+        const percentStr = await showPrompt('درصد سود برای اشتراک', '30');
+        if(percentStr===null) return;
+        const percent = percentStr;
         const profit=total*parseFloat(percent)/100;
         const finalPrice=total+profit;
         const shareText=`📊 گزارش پروژه ${currentProject}\nتاریخ: ${toJalaliString(projects[currentProject].updatedAt)}\nهزینه کل: ${formatToman(total)} تومان\nسود (${percent}%): ${formatToman(profit)} تومان\nقیمت فروش: ${formatToman(finalPrice)} تومان`;
@@ -1238,12 +1251,12 @@
         });
     }
 
-    function copyMasterTemplate(childId) {
+    async function copyMasterTemplate(childId) {
         let found = null;
         MASTER_TEMPLATES.forEach(g => { g.children.forEach(c => { if(c.id === childId) found = c; }); });
         if(!found) return;
         const newId = 'tpl_' + Date.now();
-        const newName = prompt('نام قالب شخصی جدید:', found.name);
+        const newName = await showPrompt('نام قالب شخصی جدید:', found.name);
         if(!newName) return;
         myTemplates[newId] = {
             name: newName.trim(),
@@ -1305,12 +1318,12 @@
         }
     }
 
-    function createProjectFromTemplate(id) {
+    async function createProjectFromTemplate(id) {
         const t = myTemplates[id];
         if(!t) return;
         const activeItems = t.items.filter(i => i.active);
         if(!activeItems.length) { alert('هیچ آیتم فعالی در این قالب نیست'); return; }
-        let projName = prompt('نام پروژه جدید:', t.name + ' – ' + toJalaliString(new Date()));
+        let projName = await showPrompt('نام پروژه جدید:', t.name + ' – ' + toJalaliString(new Date()));
         if(!projName) return;
         projName = projName.trim();
         if(!projName || projects[projName]) { alert('نام تکراری یا نامعتبر'); return; }
@@ -1365,6 +1378,31 @@
     loadMyTemplates();
     renderMasterTemplates();
     renderMyTemplates();
+
+    // ---------- جایگزین prompt() برای WebView ----------
+    function showPrompt(title, defaultVal = '') {
+        return new Promise(resolve => {
+            document.getElementById('inputModalTitle').textContent = title;
+            const field = document.getElementById('inputModalField');
+            field.value = defaultVal;
+            document.getElementById('inputModal').style.display = 'flex';
+            setTimeout(() => field.focus(), 100);
+            const ok = document.getElementById('inputModalOk');
+            const cancel = document.getElementById('inputModalCancel');
+            function cleanup(val) {
+                document.getElementById('inputModal').style.display = 'none';
+                ok.removeEventListener('click', onOk);
+                cancel.removeEventListener('click', onCancel);
+                field.removeEventListener('keydown', onKey);
+            }
+            function onOk() { const v = field.value.trim(); cleanup(); resolve(v || null); }
+            function onCancel() { cleanup(); resolve(null); }
+            function onKey(e) { if(e.key === 'Enter') onOk(); if(e.key === 'Escape') onCancel(); }
+            ok.addEventListener('click', onOk);
+            cancel.addEventListener('click', onCancel);
+            field.addEventListener('keydown', onKey);
+        });
+    }
 
     // ---------- ماشین حساب حرفه‌ای v3.2 ----------
     (function(){
@@ -1543,13 +1581,13 @@
     }
     function importSingleProject(file) {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = async e => {
             try {
                 const data = JSON.parse(e.target.result);
                 if(data.type === "HesabyarSingleProject" && data.name && data.data) {
                     let newName = data.name;
                     if(projects[newName]) {
-                        newName = prompt("نام پروژه تکراری است. نام جدید وارد کنید:", newName + " (جدید)");
+                        newName = await showPrompt("نام پروژه تکراری است. نام جدید وارد کنید:", newName + " (جدید)");
                         if(!newName) return;
                     }
                     projects[newName] = data.data; currentProject = newName;
@@ -1637,6 +1675,7 @@
     document.getElementById('applyAdjustAllBtn')?.addEventListener('click', () => applyAdjust(true));
 
 
+    document.getElementById('addBtn').addEventListener('click',addOrUpdate);
     document.getElementById('cancelEditBtn').addEventListener('click',cancelEdit);
     document.getElementById('calculateBtn').addEventListener('click',showProfit);
     document.getElementById('newProjectBtn').addEventListener('click',newProject);
