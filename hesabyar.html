@@ -224,7 +224,7 @@
 
         <div id="totalDisplay" class="summary">💰 هزینه کل: 0 تومان</div>
         
-        <div class="flex"><button id="calculateBtn" style="flex:1">🧮 محاسبه سود</button></div>
+        <div class="flex"><button id="calculateBtn" style="flex:1">🧮 محاسبه سود</button><button id="adjustPricesBtn" class="btn-secondary" style="flex:1">📈 تنظیم قیمت‌ها</button></div>
         <div class="flex-between" style="margin-top:5px;"><button id="exportCsvBtn" class="btn-secondary" style="flex:1;">📤 CSV</button><button id="pdfBtn" class="btn-secondary" style="flex:1;">📄 PDF</button><button id="shareBtn" class="btn-secondary" style="flex:1;"><i class="fas fa-share-alt"></i> اشتراک</button></div>
         <div id="resultArea" class="modal-content" style="display:none; margin-top:15px;"></div>
         <div class="chart-container">
@@ -234,7 +234,60 @@
     </div>
 
     <!-- قالب‌ها -->
-    <div id="templatesPanel" class="panel"><div style="text-align:center; padding:40px 20px;"><i class="fas fa-box-open" style="font-size:64px; color:#C9A03D;"></i><h3>کتابخانه قالب‌های آماده</h3><p>به زودی قالب‌های اختصاصی برای مشاغل مختلف اضافه می‌شود.</p></div></div>
+    <div id="templatesPanel" class="panel">
+      <div style="padding:15px;">
+
+        <!-- بخش قالب‌های مادر -->
+        <h3 style="margin-bottom:4px;">📚 قالب‌های مادر</h3>
+        <p class="muted" style="margin-bottom:12px;">انتخاب کنید، تنظیم کنید، پروژه بسازید</p>
+        <div id="masterTemplatesList"></div>
+
+        <hr style="margin:18px 0; border:none; border-top:1px dashed #C9A03D;">
+
+        <!-- بخش قالب‌های شخصی -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <h3>🗂️ قالب‌های من</h3>
+        </div>
+        <p class="muted" style="margin-bottom:12px;">کپی از قالب مادر — قابل ویرایش و حذف</p>
+        <div id="myTemplatesList">
+          <div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- مودال ویرایش قالب شخصی -->
+    <div id="editTemplateModal" class="modal">
+      <div class="modal-content" style="max-width:560px;">
+        <span class="close-modal" id="closeEditTemplate">&times;</span>
+        <h3 id="editTemplateTitle">✏️ ویرایش قالب</h3>
+        <div class="form-group" style="margin-top:12px;">
+          <label>نام قالب</label>
+          <input type="text" id="editTemplateName" placeholder="مثال: کابینت مدرن">
+        </div>
+        <p style="font-weight:bold; margin-bottom:8px; font-size:13px; color:#1E3A2F;">آیتم‌های قالب (تیک‌دار = فعال)</p>
+        <div id="editTemplateItems" style="max-height:320px; overflow-y:auto;"></div>
+        <div style="margin-top:12px;">
+          <label style="font-size:13px;">➕ افزودن آیتم دلخواه</label>
+          <div style="display:flex; gap:8px; margin-top:6px;">
+            <input type="text" id="newTemplateItemName" placeholder="نام آیتم" style="flex:2; border-radius:28px; padding:8px 12px; border:1px solid #C9A03D; font-family:inherit;">
+            <select id="newTemplateItemUnit" style="flex:1; border-radius:28px; padding:8px; border:1px solid #C9A03D; font-family:inherit;">
+              <option value="m2">متر مربع</option>
+              <option value="meter">متر طول</option>
+              <option value="piece">عدد</option>
+              <option value="kg">کیلوگرم</option>
+              <option value="g">گرم</option>
+              <option value="ton">تن</option>
+            </select>
+            <button id="addTemplateItemBtn" style="flex:1; padding:8px; border-radius:28px;">➕</button>
+          </div>
+        </div>
+        <div class="flex" style="margin-top:16px;">
+          <button id="saveTemplateBtn" style="flex:2">💾 ذخیره قالب</button>
+          <button id="useTemplateBtn" class="btn-secondary" style="flex:2">🚀 ایجاد پروژه از این قالب</button>
+        </div>
+      </div>
+    </div>
 
     <!-- پشتیبان‌گیری + لایسنس -->
     <div id="backupPanel" class="panel">
@@ -291,7 +344,28 @@
 </div>
 
 <!-- مودال‌ها -->
-<div id="helpModal" class="modal"><div class="modal-content"><span class="close-modal" id="closeHelp">&times;</span><h3>📘 راهنمای سریع v3.2</h3><ul style="line-height:2">
+<div id="adjustPricesModal" class="modal">
+  <div class="modal-content" style="max-width:520px;">
+    <span class="close-modal" id="closeAdjustPrices">&times;</span>
+    <h3>📈 تنظیم درصدی قیمت‌ها</h3>
+    <p class="muted" style="margin:8px 0 14px;">آیتم‌هایی که می‌خواهید تغییر کنند را تیک بزنید</p>
+    <div id="adjustItemsList" style="max-height:280px; overflow-y:auto; margin-bottom:14px;"></div>
+    <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px; background:#F4EFE6; padding:12px; border-radius:20px;">
+      <button id="selectAllAdjust" style="width:auto; padding:6px 12px; border-radius:14px; background:#556B5F; color:white; font-size:12px;">همه</button>
+      <button id="deselectAllAdjust" style="width:auto; padding:6px 12px; border-radius:14px; background:#9E5A4A; color:white; font-size:12px;">هیچ‌کدام</button>
+      <select id="adjustDirection" style="flex:1; border-radius:20px; padding:8px; border:1px solid #C9A03D; font-family:inherit;">
+        <option value="increase">📈 افزایش قیمت</option>
+        <option value="decrease">📉 کاهش قیمت</option>
+      </select>
+      <input type="text" id="adjustPercent" placeholder="درصد" inputmode="numeric" style="width:80px; border-radius:20px; padding:8px; border:1px solid #C9A03D; font-family:inherit; text-align:center;">
+    </div>
+    <div class="flex">
+      <button id="applyAdjustThisBtn" style="flex:1; background:#1E3A2F; color:#C9A03D;">✅ فقط این پروژه</button>
+      <button id="applyAdjustAllBtn" class="btn-secondary" style="flex:1;">🔄 همه پروژه‌های مشابه</button>
+    </div>
+    <p class="muted" style="margin-top:10px; text-align:center; font-size:11px;">«همه پروژه‌های مشابه» = آیتم‌های همنام در تمام پروژه‌ها</p>
+  </div>
+</div><div class="modal-content"><span class="close-modal" id="closeHelp">&times;</span><h3>📘 راهنمای سریع v3.2</h3><ul style="line-height:2">
 <li>هر پروژه با تاریخ شمسی ذخیره می‌شود</li>
 <li>قیمت واحد: تومان، بدون اعشار، کاما خودکار</li>
 <li>مقدار: اعشاری، کاما خودکار</li>
@@ -979,6 +1053,319 @@
         }catch(e){ alert('خطا'); }
     }
 
+    // ============================================================
+    // سیستم قالب‌ها v4.0
+    // ============================================================
+
+    const MASTER_TEMPLATES = [
+        {
+            id: "cabinet", icon: "🪵", label: "چوب و مبلمان",
+            children: [
+                {
+                    id: "cabinet_kitchen", icon: "🍳", name: "کابینت آشپزخانه",
+                    items: [
+                        {name:"MDF", unit:"m2"}, {name:"نوار PVC", unit:"meter"},
+                        {name:"یراق‌آلات", unit:"piece"}, {name:"رنگ و پرایمر", unit:"kg"},
+                        {name:"چسب چوب", unit:"kg"}, {name:"لولا", unit:"piece"},
+                        {name:"ریل کشو", unit:"piece"}, {name:"دستگیره", unit:"piece"},
+                        {name:"پیچ و رول‌پلاک", unit:"piece"}, {name:"دستمزد نصب", unit:"piece"}
+                    ]
+                },
+                {
+                    id: "cabinet_furniture", icon: "🛋️", name: "مبل و دکوراسیون",
+                    items: [
+                        {name:"چوب ماسیو", unit:"m2"}, {name:"MDF", unit:"m2"},
+                        {name:"پارچه روکش", unit:"m2"}, {name:"فوم", unit:"piece"},
+                        {name:"فنر", unit:"piece"}, {name:"رنگ و لاک", unit:"kg"},
+                        {name:"پیچ و اتصالات", unit:"piece"}, {name:"دستمزد دوخت", unit:"piece"},
+                        {name:"دستمزد نجاری", unit:"piece"}
+                    ]
+                },
+                {
+                    id: "cabinet_carpenter", icon: "🔨", name: "نجار عمومی",
+                    items: [
+                        {name:"تخته چندلایی", unit:"m2"}, {name:"MDF", unit:"m2"},
+                        {name:"چوب طبیعی", unit:"meter"}, {name:"میخ و پیچ", unit:"piece"},
+                        {name:"چسب", unit:"kg"}, {name:"سنباده", unit:"piece"},
+                        {name:"رنگ", unit:"kg"}, {name:"دستمزد", unit:"piece"}
+                    ]
+                }
+            ]
+        },
+        {
+            id: "food", icon: "🍳", label: "آشپز / کترینگ",
+            children: [
+                {
+                    id: "food_main", icon: "🍽️", name: "آشپز / کترینگ",
+                    items: [
+                        {name:"گوشت قرمز", unit:"kg"}, {name:"مرغ", unit:"kg"},
+                        {name:"برنج", unit:"kg"}, {name:"روغن", unit:"kg"},
+                        {name:"سبزیجات", unit:"kg"}, {name:"ادویه و چاشنی", unit:"g"},
+                        {name:"ظروف یکبار مصرف", unit:"piece"}, {name:"دستمزد پرسنل", unit:"piece"},
+                        {name:"اجاره تجهیزات", unit:"piece"}, {name:"حمل و نقل", unit:"piece"}
+                    ]
+                }
+            ]
+        },
+        {
+            id: "construction", icon: "🏗️", label: "معمار / ساختمان",
+            children: [
+                {
+                    id: "construction_main", icon: "🧱", name: "معمار / ساختمان",
+                    items: [
+                        {name:"سیمان", unit:"kg"}, {name:"آجر", unit:"piece"},
+                        {name:"آهن و میلگرد", unit:"kg"}, {name:"شن و ماسه", unit:"ton"},
+                        {name:"کاشی و سرامیک", unit:"m2"}, {name:"رنگ دیوار", unit:"kg"},
+                        {name:"گچ", unit:"kg"}, {name:"برق‌کاری", unit:"piece"},
+                        {name:"لوله‌کشی", unit:"meter"}, {name:"دستمزد بنا", unit:"piece"},
+                        {name:"حمل مصالح", unit:"piece"}
+                    ]
+                }
+            ]
+        },
+        {
+            id: "sewing", icon: "✂️", label: "خیاط / طراح لباس",
+            children: [
+                {
+                    id: "sewing_main", icon: "👗", name: "خیاط / طراح لباس",
+                    items: [
+                        {name:"پارچه اصلی", unit:"meter"}, {name:"آستر", unit:"meter"},
+                        {name:"نخ", unit:"piece"}, {name:"دکمه", unit:"piece"},
+                        {name:"زیپ", unit:"piece"}, {name:"چسب حرارتی", unit:"meter"},
+                        {name:"برچسب برند", unit:"piece"}, {name:"دستمزد دوخت", unit:"piece"},
+                        {name:"بسته‌بندی", unit:"piece"}
+                    ]
+                }
+            ]
+        },
+        {
+            id: "print", icon: "🖨️", label: "چاپ و تبلیغات",
+            children: [
+                {
+                    id: "print_main", icon: "🖨️", name: "چاپ و تبلیغات",
+                    items: [
+                        {name:"کاغذ / مقوا", unit:"piece"}, {name:"جوهر / تونر", unit:"piece"},
+                        {name:"لمینت", unit:"m2"}, {name:"طراحی گرافیک", unit:"piece"},
+                        {name:"برش", unit:"piece"}, {name:"صحافی", unit:"piece"},
+                        {name:"بنر / فلکس", unit:"m2"}, {name:"دستمزد اجرا", unit:"piece"},
+                        {name:"ارسال", unit:"piece"}
+                    ]
+                }
+            ]
+        },
+        {
+            id: "tour", icon: "✈️", label: "تور و گردشگری",
+            children: [
+                {
+                    id: "tour_main", icon: "✈️", name: "تور و گردشگری",
+                    items: [
+                        {name:"بلیط رفت", unit:"piece"}, {name:"بلیط برگشت", unit:"piece"},
+                        {name:"هتل", unit:"piece"}, {name:"ترانسفر", unit:"piece"},
+                        {name:"بیمه مسافرتی", unit:"piece"}, {name:"ویزا", unit:"piece"},
+                        {name:"راهنمای تور", unit:"piece"}, {name:"وعده غذایی", unit:"piece"},
+                        {name:"بازدید و تفریح", unit:"piece"}
+                    ]
+                }
+            ]
+        }
+    ];
+
+    const TEMPLATES_STORAGE_KEY = "hesabyar_my_templates_v1";
+    let myTemplates = {};
+    let editingTemplateId = null;
+
+    function loadMyTemplates() {
+        try {
+            const saved = localStorage.getItem(TEMPLATES_STORAGE_KEY);
+            myTemplates = saved ? JSON.parse(saved) : {};
+        } catch(e) { myTemplates = {}; }
+    }
+
+    function saveMyTemplates() {
+        localStorage.setItem(TEMPLATES_STORAGE_KEY, JSON.stringify(myTemplates));
+    }
+
+    function renderMasterTemplates() {
+        const container = document.getElementById('masterTemplatesList');
+        if(!container) return;
+        container.innerHTML = '';
+        MASTER_TEMPLATES.forEach(group => {
+            const groupDiv = document.createElement('div');
+            groupDiv.style.cssText = 'margin-bottom:14px;';
+            let childrenHTML = group.children.map(child => `
+                <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #E6D5A8; border-radius:16px; padding:10px 14px; margin-bottom:8px;">
+                    <div>
+                        <strong style="font-size:14px; color:#1E3A2F;">${child.icon} ${child.name}</strong>
+                        <div class="muted">${child.items.length} آیتم پیشنهادی</div>
+                    </div>
+                    <button onclick="copyMasterTemplate('${child.id}')" style="width:auto; padding:8px 14px; border-radius:20px; background:#C9A03D; color:#1E3A2F; font-size:12px; white-space:nowrap;">🚀 ایجاد پروژه</button>
+                </div>
+            `).join('');
+            groupDiv.innerHTML = `
+                <div style="font-weight:bold; font-size:13px; color:#556B5F; margin-bottom:6px; padding:0 4px;">${group.icon} ${group.label}</div>
+                ${childrenHTML}
+            `;
+            container.appendChild(groupDiv);
+        });
+    }
+
+    function renderMyTemplates() {
+        const container = document.getElementById('myTemplatesList');
+        if(!container) return;
+        const keys = Object.keys(myTemplates);
+        if(!keys.length) {
+            container.innerHTML = '<div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        keys.forEach(id => {
+            const t = myTemplates[id];
+            const activeCount = t.items.filter(i=>i.active).length;
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; background:#F8F4ED; border:1px solid #E6D5A8; border-right:4px solid #C9A03D; border-radius:16px; padding:10px 14px; margin-bottom:8px;';
+            div.innerHTML = `
+                <div>
+                    <strong style="font-size:14px; color:#1E3A2F;">${t.name}</strong>
+                    <div class="muted">${activeCount} آیتم فعال از ${t.items.length}</div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button onclick="openEditTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#556B5F; color:white; font-size:12px;">✏️</button>
+                    <button onclick="deleteMyTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#9E5A4A; color:white; font-size:12px;">🗑️</button>
+                    <button onclick="createProjectFromTemplate('${id}')" style="width:auto; padding:6px 12px; border-radius:14px; background:#C9A03D; color:#1E3A2F; font-size:12px; white-space:nowrap;">🚀 پروژه</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function copyMasterTemplate(childId) {
+        let found = null;
+        MASTER_TEMPLATES.forEach(g => { g.children.forEach(c => { if(c.id === childId) found = c; }); });
+        if(!found) return;
+        const newId = 'tpl_' + Date.now();
+        const newName = prompt('نام قالب شخصی جدید:', found.name);
+        if(!newName) return;
+        myTemplates[newId] = {
+            name: newName.trim(),
+            basedOn: found.name,
+            items: found.items.map(item => ({...item, active: true}))
+        };
+        saveMyTemplates();
+        renderMyTemplates();
+        openEditTemplate(newId);
+    }
+
+    function openEditTemplate(id) {
+        editingTemplateId = id;
+        const t = myTemplates[id];
+        if(!t) return;
+        document.getElementById('editTemplateName').value = t.name;
+        document.getElementById('editTemplateTitle').textContent = '✏️ ویرایش: ' + t.name;
+        renderEditTemplateItems();
+        document.getElementById('editTemplateModal').style.display = 'flex';
+    }
+
+    function renderEditTemplateItems() {
+        const t = myTemplates[editingTemplateId];
+        if(!t) return;
+        const container = document.getElementById('editTemplateItems');
+        container.innerHTML = '';
+        t.items.forEach((item, idx) => {
+            const unitLabel = {m2:'متر مربع', meter:'متر طول', piece:'عدد', kg:'کیلوگرم', g:'گرم', ton:'تن'}[item.unit] || item.unit;
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #E6D5A8; border-radius:14px; padding:8px 12px; margin-bottom:6px;';
+            div.innerHTML = `
+                <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleTemplateItem(${idx}, this.checked)" style="width:auto; accent-color:#C9A03D; width:18px; height:18px; cursor:pointer;">
+                <div style="flex:1;">
+                    <strong style="font-size:13px; color:#1E3A2F;">${item.name}</strong>
+                    <span class="muted" style="margin-right:6px;">${unitLabel}</span>
+                </div>
+                <button onclick="removeTemplateItem(${idx})" style="width:auto; padding:4px 8px; border-radius:10px; background:#9E5A4A; color:white; font-size:11px;">✕</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function toggleTemplateItem(idx, checked) {
+        if(!editingTemplateId || !myTemplates[editingTemplateId]) return;
+        myTemplates[editingTemplateId].items[idx].active = checked;
+    }
+
+    function removeTemplateItem(idx) {
+        if(!editingTemplateId) return;
+        myTemplates[editingTemplateId].items.splice(idx, 1);
+        renderEditTemplateItems();
+    }
+
+    function deleteMyTemplate(id) {
+        if(confirm('این قالب حذف شود؟')) {
+            delete myTemplates[id];
+            saveMyTemplates();
+            renderMyTemplates();
+        }
+    }
+
+    function createProjectFromTemplate(id) {
+        const t = myTemplates[id];
+        if(!t) return;
+        const activeItems = t.items.filter(i => i.active);
+        if(!activeItems.length) { alert('هیچ آیتم فعالی در این قالب نیست'); return; }
+        let projName = prompt('نام پروژه جدید:', t.name + ' – ' + toJalaliString(new Date()));
+        if(!projName) return;
+        projName = projName.trim();
+        if(!projName || projects[projName]) { alert('نام تکراری یا نامعتبر'); return; }
+        projects[projName] = {
+            items: activeItems.map(item => ({ name: item.name, unit: item.unit, unitPrice: 0, quantity: 0, cost: 0 })),
+            createdAt: nowISO(), updatedAt: nowISO()
+        };
+        currentProject = projName;
+        saveAll(); renderProjectList(); loadProjectToUI();
+        // برو به تب پروژه‌ها
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
+        document.querySelector('[data-tab="projects"]').classList.add('active');
+        document.getElementById('projectsPanel').classList.add('active-panel');
+        alert('پروژه «' + projName + '» با ' + activeItems.length + ' آیتم ایجاد شد. قیمت‌ها را وارد کنید.');
+    }
+
+    document.getElementById('addTemplateItemBtn')?.addEventListener('click', () => {
+        if(!editingTemplateId) return;
+        const nameEl = document.getElementById('newTemplateItemName');
+        const unitEl = document.getElementById('newTemplateItemUnit');
+        const name = nameEl.value.trim();
+        if(!name) { alert('نام آیتم را وارد کنید'); return; }
+        myTemplates[editingTemplateId].items.push({ name, unit: unitEl.value, active: true });
+        nameEl.value = '';
+        renderEditTemplateItems();
+    });
+
+    document.getElementById('saveTemplateBtn')?.addEventListener('click', () => {
+        if(!editingTemplateId) return;
+        const newName = document.getElementById('editTemplateName').value.trim();
+        if(!newName) { alert('نام قالب را وارد کنید'); return; }
+        myTemplates[editingTemplateId].name = newName;
+        saveMyTemplates();
+        renderMyTemplates();
+        document.getElementById('editTemplateModal').style.display = 'none';
+    });
+
+    document.getElementById('useTemplateBtn')?.addEventListener('click', () => {
+        if(!editingTemplateId) return;
+        myTemplates[editingTemplateId].name = document.getElementById('editTemplateName').value.trim() || myTemplates[editingTemplateId].name;
+        saveMyTemplates();
+        document.getElementById('editTemplateModal').style.display = 'none';
+        createProjectFromTemplate(editingTemplateId);
+    });
+
+    document.getElementById('closeEditTemplate')?.addEventListener('click', () => {
+        document.getElementById('editTemplateModal').style.display = 'none';
+    });
+
+    // init قالب‌ها
+    loadMyTemplates();
+    renderMasterTemplates();
+    renderMyTemplates();
+
     // ---------- ماشین حساب حرفه‌ای v3.2 ----------
     (function(){
         let calcMemory = 0, calcCurrentRaw = "0", calcOperator = null, calcPrevious = null, shouldReset = false, historyStr = "";
@@ -1174,7 +1561,82 @@
         reader.readAsText(file);
     }
 
-    document.getElementById('addBtn').addEventListener('click',addOrUpdate);
+    // ---------- تنظیم درصدی قیمت‌ها ----------
+    function openAdjustPrices() {
+        const items = projects[currentProject]?.items || [];
+        if(!items.length) { alert('ابتدا آیتم اضافه کنید'); return; }
+        const container = document.getElementById('adjustItemsList');
+        container.innerHTML = '';
+        items.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #E6D5A8; border-radius:14px; padding:8px 12px; margin-bottom:6px;';
+            div.innerHTML = `
+                <input type="checkbox" checked data-idx="${idx}" class="adjust-check" style="width:18px; height:18px; accent-color:#C9A03D; cursor:pointer;">
+                <div style="flex:1;">
+                    <strong style="font-size:13px; color:#1E3A2F;">${item.name}</strong>
+                </div>
+                <span style="font-size:12px; color:#556B5F;">${formatToman(item.unitPrice)} تومان</span>
+            `;
+            container.appendChild(div);
+        });
+        document.getElementById('adjustPercent').value = '';
+        document.getElementById('adjustPricesModal').style.display = 'flex';
+    }
+
+    function applyAdjust(allProjects) {
+        const percent = parseFloat(toEnglishNumber(document.getElementById('adjustPercent').value));
+        if(isNaN(percent) || percent <= 0) { alert('درصد معتبر وارد کنید'); return; }
+        const direction = document.getElementById('adjustDirection').value;
+        const multiplier = direction === 'increase' ? (1 + percent/100) : (1 - percent/100);
+        const checks = document.querySelectorAll('.adjust-check');
+        const selectedNames = [];
+        checks.forEach(cb => {
+            if(cb.checked) {
+                const idx = parseInt(cb.dataset.idx);
+                selectedNames.push(projects[currentProject].items[idx].name);
+            }
+        });
+        if(!selectedNames.length) { alert('حداقل یک آیتم انتخاب کنید'); return; }
+
+        // اعمال روی پروژه جاری
+        selectedNames.forEach(name => {
+            projects[currentProject].items.forEach(item => {
+                if(item.name === name) {
+                    item.unitPrice = Math.round(item.unitPrice * multiplier);
+                    item.cost = Math.round(item.unitPrice * item.quantity);
+                }
+            });
+        });
+
+        // اعمال روی همه پروژه‌ها
+        if(allProjects) {
+            for(const pName in projects) {
+                if(pName === currentProject) continue;
+                selectedNames.forEach(name => {
+                    projects[pName].items.forEach(item => {
+                        if(item.name === name) {
+                            item.unitPrice = Math.round(item.unitPrice * multiplier);
+                            item.cost = Math.round(item.unitPrice * item.quantity);
+                        }
+                    });
+                });
+            }
+        }
+
+        saveAll(); loadProjectToUI();
+        document.getElementById('adjustPricesModal').style.display = 'none';
+        const scope = allProjects ? 'در همه پروژه‌ها' : 'در این پروژه';
+        alert(`✅ ${selectedNames.length} آیتم ${scope} ${direction === 'increase' ? 'افزایش' : 'کاهش'} ${percent}٪ پیدا کرد.`);
+    }
+
+    document.getElementById('adjustPricesBtn')?.addEventListener('click', openAdjustPrices);
+    document.getElementById('closeAdjustPrices')?.addEventListener('click', () => document.getElementById('adjustPricesModal').style.display = 'none');
+    document.getElementById('selectAllAdjust')?.addEventListener('click', () => document.querySelectorAll('.adjust-check').forEach(c => c.checked = true));
+    document.getElementById('deselectAllAdjust')?.addEventListener('click', () => document.querySelectorAll('.adjust-check').forEach(c => c.checked = false));
+    document.getElementById('applyAdjustThisBtn')?.addEventListener('click', () => applyAdjust(false));
+    document.getElementById('applyAdjustAllBtn')?.addEventListener('click', () => applyAdjust(true));
+
+
     document.getElementById('cancelEditBtn').addEventListener('click',cancelEdit);
     document.getElementById('calculateBtn').addEventListener('click',showProfit);
     document.getElementById('newProjectBtn').addEventListener('click',newProject);
