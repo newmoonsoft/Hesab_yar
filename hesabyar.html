@@ -2,8 +2,8 @@
 <html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>حساب یار · محاسبه حرفه‌ای قیمت تمام شده - v3.2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>حساب یار · محاسبه حرفه‌ای قیمت تمام شده - v3.6.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -27,6 +27,18 @@
         body.dark .item-row { background: #2C2C2C; border-color: #444; }
         body.dark .items-box { background: #222; border-color: #444; }
         body.dark details summary { background: #2C2C2C; color: #E6D5A8; }
+        /* مقیاس فونت تنظیمات */
+        body.fs-medium .container { zoom: 1.12; }
+        body.fs-large   .container { zoom: 1.25; }
+        body.fs-medium .floating-calc { zoom: 1.10; }
+        body.fs-large   .floating-calc { zoom: 1.20; }
+        /* جستجوی سراسری پروژه‌ها */
+        .global-search-results { background:#FFF8E7; border:1px solid #C9A03D; border-radius:18px; margin-top:6px; max-height:240px; overflow:auto; }
+        .global-search-results .gsr-item { padding:8px 12px; border-bottom:1px dashed #E6D5A8; cursor:pointer; font-size:12px; }
+        .global-search-results .gsr-item:last-child{border-bottom:none;}
+        .global-search-results .gsr-item:hover { background:#F4EFE6; }
+        body.dark .global-search-results { background:#262626; border-color:#C9A03D; }
+        body.dark .global-search-results .gsr-item { color:#EEE; border-color:#444; }
         
         .container { max-width: 950px; margin: auto; background: #FEFBF6; border-radius: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; }
         .header { background: #1E3A2F; padding: 16px 20px; text-align: center; border-bottom: 3px solid #C9A03D; position: relative; }
@@ -109,6 +121,13 @@
         .modal-content { background:#FEFBF6; padding:20px; border-radius:24px; max-width:500px; width:100%; position:relative; border:2px solid #C9A03D; }
         body.dark .modal-content { background:#2A2A2A; }
         .close-modal { position:absolute; top:10px; left:14px; font-size:22px; cursor:pointer; color:#9E5A4A; }
+        .input-suggestions { display:none; margin-top:8px; border:1px solid #C9A03D; border-radius:18px; background:#FFF8E7; max-height:190px; overflow:auto; }
+        .input-suggestion-row { width:100%; display:block; padding:9px 12px; border:0; border-bottom:1px dashed #E6D5A8; border-radius:0; background:transparent; color:#1E3A2F; text-align:right; font-size:13px; cursor:pointer; }
+        .input-suggestion-row:last-child { border-bottom:0; }
+        .input-suggestion-row:hover { background:#F4EFE6; transform:none; }
+        body.dark .input-suggestions { background:#262626; border-color:#C9A03D; }
+        body.dark .input-suggestion-row { color:#EEE; border-color:#444; }
+        body.dark .input-suggestion-row:hover { background:#333; }
         .license-status { padding:10px; border-radius:16px; margin:10px 0; text-align:center; font-weight:bold; }
         .license-ok { background:#d4edda; color:#155724; }
         .license-bad { background:#f8d7da; color:#721c24; }
@@ -155,7 +174,12 @@
         @keyframes splashLoad { 0% { transform: translateX(-120%); } 100% { transform: translateX(350%); } }
         .splash-foot { position: absolute; bottom: 28px; font-size: 11px; color: #9a8b6b; }
         .splash-skip { position: absolute; bottom: 56px; font-size: 11px; color: #c9a03d; opacity: 0.8; }
-    </style>
+    
+/* v3.6 Toast & Modal */
+.toast{position:fixed;top:20px;right:20px;z-index:5000;background:#1E3A2F;color:#fff;padding:12px 18px;border-radius:12px;display:none}
+.project-group{border:1px solid #ddd;border-radius:14px;padding:10px;margin:8px 0}
+
+</style>
 </head>
 <body>
 
@@ -168,7 +192,7 @@
 </div>
   <div class="splash-title">حساب یار</div>
   <div class="splash-sub">همراه هوشمند محاسبات و مدیریت پروژه</div>
-  <div class="splash-version">نسخه ۳.۲ • نیومون</div>
+  <div class="splash-version">نسخه ۳.۶.۲ • نیومون</div>
   <div class="splash-loader"><span></span></div>
   <div class="splash-skip">برای ادامه ضربه بزنید</div>
   <div class="splash-foot">© ۱۴۰۳ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="315f54465c5e5e5f425e57451f424441415e434571565c50585d1f525e5c">[email&#160;protected]</a></div>
@@ -179,7 +203,7 @@
     <div class="header">
         <div class="logo-circle"><img src="data:image/png;base64,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" alt="حساب یار" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-calculator\' style=\'font-size:48px;color:#C9A03D;\'></i>'"></div>
         <div class="brand-name">حساب یار</div>
-        <div class="brand-tagline">همراه هوشمند محاسبات و مدیریت پروژه – نسخه ۳.۲</div>
+        <div class="brand-tagline">همراه هوشمند محاسبات و مدیریت پروژه – نسخه ۳.۶</div>
         <div class="today-badge" id="todayJalali">📅 امروز: …</div>
     </div>
 
@@ -188,14 +212,24 @@
         <button class="tab-btn active" data-tab="projects">📁 پروژه‌ها</button>
         <button class="tab-btn" data-tab="templates">📦 قالب‌ها</button>
         <button class="tab-btn" data-tab="backup">💾 پشتیبان / لایسنس</button>
+        <button class="tab-btn" data-tab="settings">⚙️ تنظیمات</button>
     </div>
 
     <!-- پنل پروژه‌ها -->
     <div id="projectsPanel" class="panel active-panel">
-        <div class="flex"><select id="projectSelect" style="flex:2"></select><button id="newProjectBtn">➕ جدید</button></div>
+        <div class="flex" style="display:flex; gap:8px; margin-bottom:12px;">
+            <select id="categorySelect" onchange="onCategorySelectChange(this.value)" style="flex:1; font-weight:bold; font-size:12px;"></select>
+            <select id="projectSelect" onchange="onProjectSelectChange(this.value)" style="flex:1.2; font-weight:bold; font-size:12px;"></select>
+            <button id="newProjectBtn" style="width:auto; padding:0 15px; font-size:12px; flex-shrink:0;">➕ جدید</button>
+        </div>
         <div class="flex-between" style="margin-top:5px;"><button id="copyProjectBtn" class="btn-secondary" style="flex:1;">📋 کپی</button><button id="renameProjectBtn" class="btn-secondary" style="flex:1;">✏️ تغییر نام</button><button id="deleteProjectBtn" class="btn-danger" style="flex:1;">🗑️ حذف</button></div>
         <div class="flex-between" style="margin-top:5px;"><button id="exportProjectBtn" class="btn-secondary" style="flex:1;">📤 خروجی این پروژه</button><button id="importProjectBtn" class="btn-secondary" style="flex:1;">📥 وارد کردن پروژه</button><input type="file" id="importProjectFile" accept=".json" style="display:none;"></div>
         
+        <!-- جستجوی سراسری بین همه پروژه‌ها (همه دسته‌ها) -->
+        <div style="margin:6px 0 10px;">
+            <input type="text" id="globalProjectSearch" placeholder="🔍 جستجوی سریع بین همه پروژه‌ها (نام پروژه، دسته، متریال)..." oninput="runGlobalProjectSearch()" onfocus="runGlobalProjectSearch()" style="width:100%; border-radius:28px; padding:9px 14px; border:1px solid #C9A03D; font-family:inherit; background:var(--card-bg); color:var(--text-dark); font-size:12px; box-sizing:border-box;">
+            <div id="globalSearchResults" class="global-search-results" style="display:none;"></div>
+        </div>
         <div class="project-meta">
             <span id="currentProjectName">📁 پروژه: …</span>
             <span class="project-date" id="currentProjectDate">📅 …</span>
@@ -206,7 +240,7 @@
             <h3 style="font-size:1rem;">➕ اضافه کردن متریال / خدمت <span class="calc-icon" id="openCalcBtn"><i class="fas fa-calculator"></i></span></h3>
             <div class="form-group"><label>نام</label><input type="text" id="matName" placeholder="مثال: ام دی اف، اجرت"></div>
             <div class="form-group"><label>واحد</label><select id="unit"><option value="m2">متر مربع</option><option value="meter">متر طول</option><option value="piece">عدد</option><option value="kg">کیلوگرم</option><option value="g">گرم</option><option value="ton">تن</option></select></div>
-            <div class="form-group"><label>قیمت واحد (تومان)</label><input type="text" id="unitPrice" placeholder="450,000" inputmode="numeric" autocomplete="off"></div>
+            <div class="form-group"><label>قیمت واحد (<span class="cur-label">تومان</span>)</label><input type="text" id="unitPrice" placeholder="450,000" inputmode="numeric" autocomplete="off"></div>
             <div class="form-group"><label>مقدار</label><input type="text" id="quantity" placeholder="2.5" inputmode="decimal" autocomplete="off"></div>
             <div class="flex"><button id="addBtn" style="flex:2">➕ اضافه</button><button id="cancelEditBtn" class="btn-secondary" style="flex:1; display:none;">لغو</button></div>
         </div>
@@ -222,7 +256,7 @@
             </div>
         </details>
 
-        <div id="totalDisplay" class="summary">💰 هزینه کل: 0 تومان</div>
+        <div id="totalDisplay" class="summary">💰 هزینه کل: 0 <span class="cur-label">تومان</span></div>
         
         <div class="flex"><button id="calculateBtn" style="flex:1">🧮 محاسبه سود</button><button id="adjustPricesBtn" class="btn-secondary" style="flex:1">📈 تنظیم قیمت‌ها</button></div>
         <div class="flex-between" style="margin-top:5px;"><button id="exportCsvBtn" class="btn-secondary" style="flex:1;">📤 CSV</button><button id="pdfBtn" class="btn-secondary" style="flex:1;">📄 PDF</button><button id="shareBtn" class="btn-secondary" style="flex:1;"><i class="fas fa-share-alt"></i> اشتراک</button></div>
@@ -245,12 +279,57 @@
         <hr style="margin:18px 0; border:none; border-top:1px dashed #C9A03D;">
 
         <!-- بخش قالب‌های شخصی -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <h3>🗂️ قالب‌های من</h3>
+        <h3 style="margin-bottom:10px;">🗂️ بخش قالب‌های شخصی</h3>
+        
+        <!-- فیلد جستجوی سریع الگوها و پروژه‌ها -->
+        <div style="margin-bottom: 12px;">
+            <input type="text" id="templatesSearchInp" placeholder="🔍 جستجو در الگوها، پروژه‌ها، متریال‌ها یا دسته‌ها..." oninput="filterTemplatesAndProjects()" style="width:100%; border-radius:28px; padding:10px 14px; border:1px solid #C9A03D; font-family:inherit; background:var(--card-bg); color:var(--text-dark); font-size:12px; box-sizing:border-box;">
         </div>
-        <p class="muted" style="margin-bottom:12px;">کپی از قالب مادر — قابل ویرایش و حذف</p>
-        <div id="myTemplatesList">
-          <div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید.</div>
+        
+        <!-- زیر تب‌ها با کلاس‌های کاملا مجزا (بدون تداخل با تب‌های اصلی) -->
+        <div style="display:flex; gap:6px; background:#F4EFE6; padding:6px; border-radius:60px; margin-bottom:15px;">
+            <button class="sub-tab-btn active" id="subTabMyTemplates" onclick="showSubTab('myTemplates')" style="font-size:11px; flex:1; background:none; border:none; padding:8px 5px; border-radius:40px; font-weight:bold; color:#1E3A2F; cursor:pointer; transition:0.2s;">📦 قالب‌های من</button>
+            <button class="sub-tab-btn" id="subTabMyProjects" onclick="showSubTab('myProjects')" style="font-size:11px; flex:1; background:none; border:none; padding:8px 5px; border-radius:40px; font-weight:bold; color:#1E3A2F; cursor:pointer; transition:0.2s;">📁 پروژه‌های من</button>
+        </div>
+        
+        <!-- زیر پنل ۱: قالب‌های من -->
+        <div id="subPanelMyTemplates" class="sub-panel">
+            <p class="muted" style="margin-bottom:12px;">کپی از قالب مادر یا پروژه‌ها — قابل ویرایش و حذف</p>
+            <div id="myTemplatesList">
+                <div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید.</div>
+            </div>
+        </div>
+        
+        <!-- زیر پنل ۲: پروژه‌های من -->
+        <div id="subPanelMyProjects" class="sub-panel" style="display:none;">
+            <p class="muted" style="margin-bottom:10px; text-align:center;">لیست پروژه‌های ذخیره‌شده. می‌توانید جستجو، مرتب‌سازی، ویرایش یا حذف کنید.</p>
+            <div style="display:flex; gap:6px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+                <span id="saveStatusBadge" style="font-size:11px; padding:5px 10px; border-radius:20px; background:#E6D5A8; color:#1E3A2F;">⏺ آماده</span>
+                <button onclick="testSaveStatus()" style="font-size:11px; padding:5px 10px; border-radius:20px; background:#556B5F; color:white; border:none; cursor:pointer;">🔎 تست ذخیره</button>
+                <button onclick="openSnapshotsModal()" style="font-size:11px; padding:5px 10px; border-radius:20px; background:#C9A03D; color:#1E3A2F; border:none; cursor:pointer; font-weight:bold;">⏮️ بازیابی نسخه‌های پشتیبان</button>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <input type="text" id="projectsSearchInp" placeholder="🔍 جستجو در پروژه‌ها..." oninput="renderProjectTemplatesList()" style="flex:2; border-radius:28px; padding:8px 12px; border:1px solid #C9A03D; font-family:inherit; background:var(--card-bg); color:var(--text-dark); font-size:12px;">
+                <select id="projectsSortSelect" onchange="renderProjectTemplatesList()" style="flex:1; border-radius:28px; padding:8px; border:1px solid #C9A03D; font-family:inherit; background:var(--card-bg); color:var(--text-dark); font-size:12px;">
+                    <option value="updated_desc">🕒 جدیدترین ویرایش</option>
+                    <option value="updated_asc">🕒 قدیمی‌ترین ویرایش</option>
+                    <option value="created_desc">📅 جدیدترین ساخت</option>
+                    <option value="created_asc">📅 قدیمی‌ترین ساخت</option>
+                    <option value="name_asc">🔤 نام (الف-ی)</option>
+                    <option value="name_desc">🔤 نام (ی-الف)</option>
+                </select>
+            </div>
+            <div id="projectTemplatesList"></div>
+        </div>
+
+        <!-- مودال بازیابی نسخه‌های پشتیبان -->
+        <div id="snapshotsModal" class="modal">
+            <div class="modal-content" style="max-width:620px;">
+                <span class="close-modal" onclick="document.getElementById('snapshotsModal').style.display='none'">&times;</span>
+                <h3>⏮️ بازیابی نسخه‌های پشتیبان</h3>
+                <p class="muted" style="font-size:12px; margin:6px 0 12px;">قبل از هر ذخیره، نسخه‌ی قبلی به‌صورت خودکار نگه داشته می‌شود (حداکثر ۱۰ نسخه). می‌توانید روی هر نسخه پیش‌نمایش بگیرید و سپس بازگردانی کنید.</p>
+                <div id="snapshotsList" style="max-height:60vh; overflow-y:auto;"></div>
+            </div>
         </div>
 
       </div>
@@ -290,6 +369,33 @@
     </div>
 
     <!-- پشتیبان‌گیری + لایسنس -->
+    <!-- پنل تنظیمات -->
+    <div id="settingsPanel" class="panel">
+        <div style="padding:15px;">
+            <h3>⚙️ تنظیمات کلی</h3>
+            <p class="muted" style="margin-bottom:14px;">واحد پولی و اندازه فونت برنامه را از اینجا تغییر دهید.</p>
+
+            <div class="form-group">
+                <label>💵 واحد پولی</label>
+                <select id="currencySelect" onchange="changeCurrency(this.value)" style="width:100%;">
+                    <option value="toman">تومان (پیش‌فرض)</option>
+                    <option value="rial">ریال (× ۱۰)</option>
+                </select>
+                <p class="muted" style="font-size:11px; margin-top:4px;">با تغییر به ریال، تمام مبالغ در ۱۰ ضرب می‌شود؛ بازگشت به تومان دوباره تقسیم بر ۱۰ خواهد شد.</p>
+            </div>
+
+            <div class="form-group" style="margin-top:18px;">
+                <label>🔤 اندازه فونت</label>
+                <select id="fontSizeSelect" onchange="changeFontSize(this.value)" style="width:100%;">
+                    <option value="default">پیش‌فرض</option>
+                    <option value="medium">متوسط</option>
+                    <option value="large">بزرگ</option>
+                </select>
+                <p class="muted" style="font-size:11px; margin-top:4px;">اندازه فونت کل برنامه را با ضریب منطقی تغییر می‌دهد.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="backupPanel" class="panel">
         <div style="padding:15px;">
             <h3>🔐 فعال‌سازی نسخه کامل</h3>
@@ -340,7 +446,7 @@
         <a href="https://ble.ir/09155070802" target="_blank">بله</a> |
         <a href="/cdn-cgi/l/email-protection#751b1002181a1a1b061a13015b060005051a0701351218141c195b161a18">ایمیل</a>
     </div>
-    <div class="footer">© ۱۴۰۳ · نیومون · تمامی حقوق محفوظ است · v3.2</div>
+    <div class="footer">© ۱۴۰۳ · نیومون · تمامی حقوق محفوظ است · v3.6</div>
 </div>
 
 <!-- مودال‌ها -->
@@ -365,7 +471,7 @@
     </div>
     <p class="muted" style="margin-top:10px; text-align:center; font-size:11px;">«همه پروژه‌های مشابه» = آیتم‌های همنام در تمام پروژه‌ها</p>
   </div>
-</div><div class="modal-content"><span class="close-modal" id="closeHelp">&times;</span><h3>📘 راهنمای سریع v3.2</h3><ul style="line-height:2">
+</div><div class="modal-content"><span class="close-modal" id="closeHelp">&times;</span><h3>📘 راهنمای سریع v3.6</h3><ul style="line-height:2">
 <li>هر پروژه با تاریخ شمسی ذخیره می‌شود</li>
 <li>قیمت واحد: تومان، بدون اعشار، کاما خودکار</li>
 <li>مقدار: اعشاری، کاما خودکار</li>
@@ -379,7 +485,9 @@
   <div class="modal-content" style="max-width:380px;">
     <h3 id="inputModalTitle">ورودی</h3>
     <div class="form-group" style="margin:14px 0;">
-      <input type="text" id="inputModalField" style="border-radius:28px; padding:10px 14px; border:1px solid #C9A03D; font-family:inherit; font-size:15px; width:100%; box-sizing:border-box;">
+      <input type="text" id="inputModalField" list="inputModalSuggestions" autocomplete="off" dir="rtl" style="border-radius:28px; padding:10px 14px; border:1px solid #C9A03D; font-family:inherit; font-size:15px; width:100%; box-sizing:border-box; text-align:right;">
+      <datalist id="inputModalSuggestions"></datalist>
+      <div id="inputModalSuggestionList" class="input-suggestions"></div>
     </div>
     <div class="flex">
       <button id="inputModalOk" style="flex:2;">✅ تأیید</button>
@@ -387,7 +495,7 @@
     </div>
   </div>
 </div>
-<div id="aboutModal" class="modal"><div class="modal-content"><span class="close-modal" id="closeAbout">&times;</span><h3>ℹ️ درباره ما</h3><p><strong>حساب یار</strong> نسخه ۳.۲</p><p>توسعه‌دهنده: نیومون</p><p>ارتباط با ما: 09353330966</p><p>ایمیل: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d33382a303232332e323b29732e282d2d322f291d3a303c3431733e3230">[email&#160;protected]</a></p><p>تمامی حقوق محفوظ است © ۱۴۰۳</p></div></div>
+<div id="aboutModal" class="modal"><div class="modal-content"><span class="close-modal" id="closeAbout">&times;</span><h3>ℹ️ درباره ما</h3><p><strong>حساب یار</strong> نسخه ۳.۶</p><p>توسعه‌دهنده: نیومون</p><p>ارتباط با ما: 09353330966</p><p>ایمیل: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d33382a303232332e323b29732e282d2d322f291d3a303c3431733e3230">[email&#160;protected]</a></p><p>تمامی حقوق محفوظ است © ۱۴۰۳</p></div></div>
 <div id="privacyModal" class="modal"><div class="modal-content"><span class="close-modal" id="closePrivacy">&times;</span><h3>🔒 حریم خصوصی</h3><p>برنامه «حساب یار» اطلاعات شخصی کاربران را جمع‌آوری نمی‌کند. تمام داده‌ها فقط در حافظه داخلی گوشی ذخیره می‌شوند.</p><p>دسترسی‌های مورد نیاز: ذخیره‌سازی برای خروجی CSV/PDF.</p></div></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
@@ -406,6 +514,8 @@
         if(n < 0) parts[0] = '-' + parts[0];
         return parts.join('.');
     }
+    function getCurrencyMode(){ try{ return localStorage.getItem('hesabyar_currency') || 'toman'; }catch(_){ return 'toman'; } }
+    function getCurrencyUnit(){ return getCurrencyMode() === 'rial' ? 'ریال' : 'تومان'; }
     function formatToman(num){
         if(isNaN(num)) return '';
         return formatIntWithCommas(String(Math.round(Number(num))));
@@ -647,7 +757,7 @@
     function canAddMore(cur) {
         if(isFullVersion) return true;
         if(cur < MAX_FREE) return true;
-        alert(`نسخه رایگان فقط ${MAX_FREE} آیتم اجازه می‌دهد. برای حذف محدودیت، از تب پشتیبان / لایسنس، کد فعال‌سازی را وارد کنید.`);
+        showToast(`نسخه رایگان فقط ${MAX_FREE} آیتم اجازه می‌دهد. برای حذف محدودیت، از تب پشتیبان / لایسنس، کد فعال‌سازی را وارد کنید.`);
         return false;
     }
 
@@ -660,18 +770,92 @@
 
     function nowISO(){ return new Date().toISOString(); }
 
+    let lastSaveStatus = { ok: true, ts: 0, error: '', backupOk: true, backupError: '' };
+
     function saveAll() {
+        lastSaveStatus = { ok: true, ts: Date.now(), error: '', backupOk: true, backupError: '' };
+        // پشتیبان خودکار: قبل از هر ذخیره، نسخه‌ی قبلی را نگه دار
+        try{
+            const prev = localStorage.getItem(STORAGE_KEY);
+            if(prev){
+                const backups = JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]');
+                backups.unshift({ ts: Date.now(), projects: JSON.parse(prev) });
+                while(backups.length > 10) backups.pop();
+                localStorage.setItem(BACKUP_KEY, JSON.stringify(backups));
+            }
+        }catch(e){
+            lastSaveStatus.backupOk = false;
+            lastSaveStatus.backupError = (e && e.message) ? e.message : String(e);
+            console.error('[Hesabyar] backup error:', e);
+        }
         if(projects[currentProject]){
             projects[currentProject].updatedAt = nowISO();
         }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
         try{
-            const backups = JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]');
-            backups.unshift({ ts: Date.now(), projects: JSON.parse(JSON.stringify(projects)) });
-            while(backups.length > 5) backups.pop();
-            localStorage.setItem(BACKUP_KEY, JSON.stringify(backups));
-            refreshBackupLog();
-        }catch(e){}
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+        }catch(e){
+            lastSaveStatus.ok = false;
+            lastSaveStatus.error = (e && e.message) ? e.message : String(e);
+            console.error('[Hesabyar] save error:', e);
+            try{ showToast('⚠️ خطای ذخیره: ' + lastSaveStatus.error); }catch(_){}
+        }
+        try{ refreshBackupLog && refreshBackupLog(); }catch(e){}
+        try{ if(typeof renderProjectTemplatesList==='function') renderProjectTemplatesList(); }catch(e){}
+        try{ if(typeof updateSaveStatusUI==='function') updateSaveStatusUI(); }catch(e){}
+        return lastSaveStatus;
+    }
+
+    function testSaveStatus() {
+        const report = [];
+        // 1) localStorage در دسترس است؟
+        let lsOk = false, lsErr = '';
+        try{
+            const k = '__hesabyar_test__';
+            localStorage.setItem(k, '1');
+            lsOk = localStorage.getItem(k) === '1';
+            localStorage.removeItem(k);
+        }catch(e){ lsErr = e.message || String(e); }
+        report.push('• دسترسی به حافظه‌ی مرورگر: ' + (lsOk ? '✅ سالم' : '❌ ناموفق' + (lsErr?(' ('+lsErr+')'):'')));
+
+        // 2) حجم فعلی
+        let size = 0;
+        try{ size = (localStorage.getItem(STORAGE_KEY) || '').length; }catch(_){}
+        report.push('• حجم داده‌های ذخیره‌شده: ' + (size/1024).toFixed(1) + ' KB');
+
+        // 3) تعداد پروژه و پشتیبان
+        let bcount = 0;
+        try{ bcount = (JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]')).length; }catch(_){}
+        report.push('• تعداد پروژه‌ها: ' + Object.keys(projects).length);
+        report.push('• تعداد نسخه‌های پشتیبان: ' + bcount);
+
+        // 4) آخرین وضعیت ذخیره
+        if(lastSaveStatus.ts){
+            report.push('• آخرین تلاش ذخیره: ' + new Date(lastSaveStatus.ts).toLocaleString('fa-IR'));
+            report.push('• نتیجه ذخیره: ' + (lastSaveStatus.ok ? '✅ موفق' : '❌ ناموفق — ' + lastSaveStatus.error));
+            report.push('• نتیجه پشتیبان: ' + (lastSaveStatus.backupOk ? '✅ موفق' : '❌ ناموفق — ' + lastSaveStatus.backupError));
+        } else {
+            report.push('• هنوز ذخیره‌ای انجام نشده است.');
+        }
+
+        // 5) تست ذخیره‌ی واقعی
+        const s = saveAll();
+        report.push('• تست ذخیره‌ی واقعی: ' + (s.ok ? '✅ موفق' : '❌ ناموفق — ' + s.error));
+
+        alert('🔎 گزارش وضعیت ذخیره:\n\n' + report.join('\n'));
+    }
+
+    function updateSaveStatusUI(){
+        const el = document.getElementById('saveStatusBadge');
+        if(!el) return;
+        if(!lastSaveStatus.ts){ el.textContent = '⏺ آماده'; el.style.background = '#E6D5A8'; el.style.color = '#1E3A2F'; return; }
+        if(lastSaveStatus.ok && lastSaveStatus.backupOk){
+            el.textContent = '✅ ذخیره شد (' + new Date(lastSaveStatus.ts).toLocaleTimeString('fa-IR') + ')';
+            el.style.background = '#D6E9D6'; el.style.color = '#1E3A2F';
+        } else {
+            el.textContent = '❌ خطای ذخیره';
+            el.style.background = '#F4C7C0'; el.style.color = '#7A2E22';
+            el.title = (lastSaveStatus.error || '') + ' | ' + (lastSaveStatus.backupError || '');
+        }
     }
     function migrateOldProjects(obj){
         const migrated = {};
@@ -701,25 +885,155 @@
             if(!projects[p].createdAt) projects[p].createdAt = nowISO();
             if(!projects[p].updatedAt) projects[p].updatedAt = projects[p].createdAt;
             if(!Array.isArray(projects[p].items)) projects[p].items = [];
+            if(!projects[p].category) projects[p].category = "عمومی";
         }
+        saveAll();
         saveAll();
         currentProject = Object.keys(projects)[0];
     }
     function renderProjectList() {
-        const sel=document.getElementById('projectSelect'); sel.innerHTML='';
-        for(let p in projects){
-            const proj = projects[p];
-            let opt=document.createElement('option');
-            opt.value=p;
-            const dateStr = toJalaliString(proj.updatedAt || proj.createdAt);
-            opt.textContent = `${p} — ${dateStr}`;
-            sel.appendChild(opt);
+        renderCategorySelect();
+        renderProjectSelect();
+    }
+
+    function getProjectCategorySuggestions() {
+        const categories = new Set();
+        for (const p in projects) {
+            const cat = (projects[p] && projects[p].category ? projects[p].category : "عمومی").trim();
+            if (cat) categories.add(cat);
         }
-        sel.value=currentProject;
+        return Array.from(categories).sort((a, b) => a.localeCompare(b, 'fa'));
+    }
+
+    function renderCategorySelect() {
+        const sel = document.getElementById('categorySelect');
+        if (!sel) return;
+        sel.innerHTML = '';
+        
+        const categories = getProjectCategorySuggestions();
+        
+        // Populate select
+        categories.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = `📂 دسته: ${cat}`;
+            sel.appendChild(opt);
+        });
+        
+        // Add option to create a new category
+        const optNew = document.createElement('option');
+        optNew.value = "__NEW__";
+        optNew.textContent = "➕ دسته‌بندی جدید...";
+        sel.appendChild(optNew);
+        
+        // Set selected value
+        const proj = projects[currentProject];
+        const activeCat = proj ? (proj.category || "عمومی") : "عمومی";
+        sel.value = activeCat;
+    }
+
+    function renderProjectSelect() {
+        const sel = document.getElementById('projectSelect');
+        if (!sel) return;
+        sel.innerHTML = '';
+        
+        const catSelect = document.getElementById('categorySelect');
+        const activeCat = catSelect ? catSelect.value : "عمومی";
+        
+        // Find all projects belonging to activeCat
+        const filteredProjects = [];
+        for (const p in projects) {
+            const proj = projects[p];
+            const pCat = proj.category || "عمومی";
+            if (pCat === activeCat) {
+                filteredProjects.push(p);
+            }
+        }
+        
+        if (filteredProjects.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = "";
+            opt.textContent = "-- بدون پروژه --";
+            sel.appendChild(opt);
+        } else {
+            filteredProjects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                const dateStr = toJalaliString(projects[p].updatedAt || projects[p].createdAt);
+                opt.textContent = `${p} — ${dateStr}`;
+                sel.appendChild(opt);
+            });
+        }
+        
+        // Set selected project
+        if (filteredProjects.includes(currentProject)) {
+            sel.value = currentProject;
+        } else if (filteredProjects.length > 0) {
+            sel.value = filteredProjects[0];
+            if (currentProject !== filteredProjects[0]) {
+                currentProject = filteredProjects[0];
+                loadProjectToUI();
+            }
+        }
+    }
+
+    async function onCategorySelectChange(val) {
+        if (val === "__NEW__") {
+            const newCatName = await showPrompt("نام دسته‌بندی جدید را وارد کنید:");
+            if (!newCatName || !newCatName.trim()) {
+                renderCategorySelect();
+                return;
+            }
+            const trimmed = newCatName.trim();
+            
+            const defaultProjName = await showPrompt(`نام اولین پروژه در دسته "${trimmed}":`, `پروژه جدید`);
+            if (!defaultProjName || !defaultProjName.trim()) {
+                renderCategorySelect();
+                return;
+            }
+            const pName = defaultProjName.trim();
+            if (projects[pName]) {
+                showToast('این نام پروژه از قبل وجود دارد.');
+                renderCategorySelect();
+                return;
+            }
+            
+            projects[pName] = {
+                items: [],
+                createdAt: nowISO(),
+                updatedAt: nowISO(),
+                category: trimmed
+            };
+            currentProject = pName;
+            saveAll();
+            renderProjectList();
+            loadProjectToUI();
+        } else {
+            // Find first project in this category
+            let firstProj = "";
+            for (const p in projects) {
+                if ((projects[p].category || "عمومی") === val) {
+                    firstProj = p;
+                    break;
+                }
+            }
+            if (firstProj) {
+                currentProject = firstProj;
+                loadProjectToUI();
+            }
+            renderProjectSelect();
+        }
+    }
+
+    function onProjectSelectChange(val) {
+        if (val) {
+            currentProject = val;
+            loadProjectToUI();
+        }
     }
     function updateTotal(){
         let total=projects[currentProject]?.items.reduce((s,it)=>s+it.cost,0)||0;
-        document.getElementById('totalDisplay').innerHTML=`💰 هزینه کل: ${formatToman(total)} تومان`;
+        document.getElementById('totalDisplay').innerHTML=`💰 هزینه کل: ${formatToman(total)} ${getCurrencyUnit()}`;
         lastProfitInfo = {profit:0, percent:0};
         drawChart(total, 0, 0);
         return total;
@@ -794,7 +1108,7 @@
                                 const value = context.parsed;
                                 const sum = context.dataset.data.reduce((a,b)=>a+b,0);
                                 const pct = sum ? ((value/sum)*100).toFixed(1) : 0;
-                                return `${context.label}: ${formatToman(value)} تومان (${pct}%)`;
+                                return `${context.label}: ${formatToman(value)} ${getCurrencyUnit()} (${pct}%)`;
                             }
                         }
                     }
@@ -823,9 +1137,9 @@
                 div.innerHTML = `
                     <div class="item-info">
                         <strong>${it.name}</strong>
-                        <small>${formatNumber(it.quantity)} ${unitText} × ${formatToman(it.unitPrice)} تومان</small>
+                        <small>${formatNumber(it.quantity)} ${unitText} × ${formatToman(it.unitPrice)} ${getCurrencyUnit()}</small>
                     </div>
-                    <div class="item-cost">${formatToman(it.cost)} تومان</div>
+                    <div class="item-cost">${formatToman(it.cost)} ${getCurrencyUnit()}</div>
                     <div class="item-actions">
                         <button class="edit-item btn-secondary" data-idx="${i}">✏️</button>
                         <button class="delete-item btn-danger" data-idx="${i}">🗑️</button>
@@ -890,10 +1204,10 @@
         const unit=document.getElementById('unit').value;
         let unitPrice=parseFormattedNumber(document.getElementById('unitPrice').value);
         let quantity=parseFormattedNumber(document.getElementById('quantity').value);
-        if(!name){alert("نام متریال را وارد کنید"); return;}
-        if(isNaN(unitPrice)||unitPrice<=0){alert("قیمت واحد معتبر نیست"); return;}
+        if(!name){showToast("نام متریال را وارد کنید"); return;}
+        if(isNaN(unitPrice)||unitPrice<=0){showToast("قیمت واحد معتبر نیست"); return;}
         unitPrice = Math.round(unitPrice); // تومان بدون اعشار
-        if(isNaN(quantity)||quantity<=0){alert("مقدار معتبر نیست"); return;}
+        if(isNaN(quantity)||quantity<=0){showToast("مقدار معتبر نیست"); return;}
         const cost=unitPrice*quantity;
         const newItem={name,unit,unitPrice,quantity,cost};
         if(editMode && editIndex>=0){ proj.items[editIndex]=newItem; }
@@ -902,20 +1216,40 @@
         document.getElementById('matName').focus();
     }
     async function newProject(){
+        if(!isFullVersion && Object.keys(projects).length >= 2){
+            showToast("در نسخه رایگان حداکثر ثبت ۲ پروژه مجاز است. برای حذف محدودیت، از تب پشتیبان / لایسنس، کد فعال‌سازی را وارد کنید.");
+            return;
+        }
         let name = await showPrompt('نام پروژه جدید');
         if(!name) return;
         name = name.trim();
-        if(!name || projects[name]){ alert("تکراری یا نامعتبر"); return;}
-        projects[name]={items:[], createdAt: nowISO(), updatedAt: nowISO()};
+        if(!name || projects[name]){ showToast("تکراری یا نامعتبر"); return;}
+        
+        let category = await showPrompt('دسته‌بندی پروژه (موجود را انتخاب یا جدید بنویسید):', '', getProjectCategorySuggestions());
+        if (!category) category = 'عمومی';
+        category = category.trim();
+        
+        projects[name]={items:[], createdAt: nowISO(), updatedAt: nowISO(), category: category};
         currentProject=name;
         saveAll(); renderProjectList(); loadProjectToUI();
     }
     async function copyProject(){
+        if(!isFullVersion && Object.keys(projects).length >= 2){
+            showToast("در نسخه رایگان حداکثر ثبت ۲ پروژه مجاز است. برای حذف محدودیت، از تب پشتیبان / لایسنس، کد فعال‌سازی را وارد کنید.");
+            return;
+        }
         let newName = await showPrompt('نام پروژه کپی', `کپی ${currentProject}`);
         if(!newName) return;
         newName=newName.trim();
-        if(!newName || projects[newName]){ alert("تکراری یا نامعتبر"); return;}
-        projects[newName]={items:JSON.parse(JSON.stringify(projects[currentProject].items)), createdAt: nowISO(), updatedAt: nowISO()};
+        if(!newName || projects[newName]){ showToast("تکراری یا نامعتبر"); return;}
+        
+        const oldProj = projects[currentProject];
+        projects[newName]={
+            items:JSON.parse(JSON.stringify(oldProj.items)), 
+            createdAt: nowISO(), 
+            updatedAt: nowISO(),
+            category: oldProj.category || 'عمومی'
+        };
         currentProject=newName;
         saveAll(); renderProjectList(); loadProjectToUI();
     }
@@ -923,15 +1257,23 @@
         let newName = await showPrompt('نام جدید', currentProject);
         if(!newName) return;
         newName=newName.trim();
-        if(!newName || projects[newName]){ alert("تکراری یا نامعتبر"); return;}
-        projects[newName]=projects[currentProject];
+        if(!newName || (newName !== currentProject && projects[newName])){ showToast("تکراری یا نامعتبر"); return;}
+        
+        let newCategory = await showPrompt('دسته‌بندی پروژه (موجود را انتخاب یا جدید بنویسید):', projects[currentProject].category || 'عمومی', getProjectCategorySuggestions());
+        if (!newCategory) newCategory = 'عمومی';
+        newCategory = newCategory.trim();
+        
+        if (newName !== currentProject) {
+            projects[newName] = projects[currentProject];
+            delete projects[currentProject];
+        }
+        projects[newName].category = newCategory;
         projects[newName].updatedAt = nowISO();
-        delete projects[currentProject];
-        currentProject=newName;
+        currentProject = newName;
         saveAll(); renderProjectList(); loadProjectToUI();
     }
     function deleteProject(){
-        if(Object.keys(projects).length===1){ alert("آخرین پروژه قابل حذف نیست"); return; }
+        if(Object.keys(projects).length===1){ showToast("آخرین پروژه قابل حذف نیست"); return; }
         if(confirm("حذف شود؟")){
             delete projects[currentProject];
             currentProject=Object.keys(projects)[0];
@@ -940,7 +1282,7 @@
     }
     async function showProfit(){
         const items=projects[currentProject]?.items||[];
-        if(!items.length){ alert("متریالی وارد نشده"); return; }
+        if(!items.length){ showToast("متریالی وارد نشده"); return; }
         const total=updateTotal();
         let percentStr = await showPrompt('درصد سود', '30');
         if(percentStr===null) return;
@@ -948,26 +1290,105 @@
         if(isNaN(percent)) percent=0;
         const profit=total*percent/100;
         const finalPrice=total+profit;
-        document.getElementById('resultArea').innerHTML=`<h3>💰 نتیجه</h3><p>قیمت تمام شده: ${formatToman(total)} تومان</p><p>سود (${percent}%): ${formatToman(profit)} تومان</p><p style="font-size:1.3rem;">🏷️ قیمت فروش: ${formatToman(finalPrice)} تومان</p>`;
+        document.getElementById('resultArea').innerHTML=`<h3>💰 نتیجه</h3><p>قیمت تمام شده: ${formatToman(total)} ${getCurrencyUnit()}</p><p>سود (${percent}%): ${formatToman(profit)} ${getCurrencyUnit()}</p><p style="font-size:1.3rem;">🏷️ قیمت فروش: ${formatToman(finalPrice)} ${getCurrencyUnit()}</p>`;
         document.getElementById('resultArea').style.display='block';
         lastProfitInfo = {profit, percent};
         drawChart(total, profit, percent);
     }
     async function printPDF(){
-        const element=document.querySelector('.container');
-        if(!element) return;
-        const canvas=await html2canvas(element,{scale:2});
-        const imgData=canvas.toDataURL('image/png');
-        const {jsPDF}=window.jspdf;
-        const pdf=new jsPDF('p','mm','a4');
-        const imgWidth=180;
-        const imgHeight=(canvas.height*imgWidth)/canvas.width;
-        pdf.addImage(imgData,'PNG',15,15,imgWidth,imgHeight);
-        pdf.save(`hesabyar_${currentProject}.pdf`);
+        const proj = projects[currentProject];
+        const items = proj?.items || [];
+        if(!items.length){ showToast("هیچ آیتمی برای خروجی PDF نیست"); return; }
+
+        // پرسش درصد سود قبل از ساخت PDF (مانند اشتراک)
+        const defaultPct = (lastProfitInfo && lastProfitInfo.percent) ? String(lastProfitInfo.percent) : '30';
+        const askedPct = await showPrompt('درصد سود برای PDF (در صورت عدم نیاز ۰ بزنید)', defaultPct);
+        if(askedPct === null) return;
+        let percent = parseFloat(toEnglishNumber(askedPct));
+        if(isNaN(percent) || percent < 0) percent = 0;
+        try { lastProfitInfo = { percent }; } catch(_){}
+
+        showToast("در حال آماده‌سازی PDF...");
+
+        // Build a printable container off-screen with full project data
+        const wrap = document.createElement('div');
+        wrap.style.cssText = "position:fixed;top:-99999px;left:0;width:800px;background:#FEFBF6;color:#1E3A2F;font-family:'Vazirmatn',Tahoma,sans-serif;direction:rtl;padding:30px;box-sizing:border-box;";
+        const total = items.reduce((s,it)=>s+(it.cost||0),0);
+        const profit  = total*percent/100;
+        const finalPrice = total + profit;
+        const curUnit = getCurrencyUnit();
+        const unitFa = u => u==='m2'?"متر مربع":u==='meter'?"متر طول":u==='piece'?"عدد":u==='kg'?"کیلوگرم":u==='g'?"گرم":u==='ton'?"تن":u||"";
+        let rowsHtml = items.map((it,i)=>`
+            <tr>
+              <td style="border:1px solid #C9A03D;padding:6px;text-align:center;">${i+1}</td>
+              <td style="border:1px solid #C9A03D;padding:6px;">${it.name||''}</td>
+              <td style="border:1px solid #C9A03D;padding:6px;text-align:center;">${it.quantity}</td>
+              <td style="border:1px solid #C9A03D;padding:6px;text-align:center;">${unitFa(it.unit)}</td>
+              <td style="border:1px solid #C9A03D;padding:6px;text-align:left;">${formatToman(it.unitPrice)}</td>
+              <td style="border:1px solid #C9A03D;padding:6px;text-align:left;">${formatToman(it.cost)}</td>
+            </tr>`).join('');
+        wrap.innerHTML = `
+          <div style="text-align:center;border-bottom:3px solid #C9A03D;padding-bottom:12px;margin-bottom:16px;">
+            <div style="font-size:28px;font-weight:800;color:#1E3A2F;">حساب یار</div>
+            <div style="font-size:13px;color:#7a6b4b;">گزارش پروژه</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:12px;">
+            <div><b>پروژه:</b> ${currentProject}</div>
+            <div><b>تاریخ:</b> ${toJalaliString(proj.updatedAt || new Date().toISOString())}</div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:#1E3A2F;color:#E6D5A8;">
+                <th style="border:1px solid #C9A03D;padding:7px;">#</th>
+                <th style="border:1px solid #C9A03D;padding:7px;">نام متریال</th>
+                <th style="border:1px solid #C9A03D;padding:7px;">مقدار</th>
+                <th style="border:1px solid #C9A03D;padding:7px;">واحد</th>
+                <th style="border:1px solid #C9A03D;padding:7px;">قیمت واحد (${curUnit})</th>
+                <th style="border:1px solid #C9A03D;padding:7px;">هزینه (${curUnit})</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+          <div style="margin-top:18px;padding:12px;background:#F5EFE0;border:1px solid #C9A03D;border-radius:8px;font-size:14px;line-height:2;">
+            <div><b>جمع کل هزینه:</b> ${formatToman(total)} ${curUnit}</div>
+            ${percent>0?`<div><b>سود (${percent}%):</b> ${formatToman(profit)} ${curUnit}</div>
+            <div style="font-size:16px;color:#1E3A2F;"><b>🏷️ قیمت فروش نهایی:</b> ${formatToman(finalPrice)} ${curUnit}</div>`:''}
+          </div>
+          <div style="margin-top:18px;text-align:center;font-size:10px;color:#9a8b6b;">تولید شده توسط حساب یار · نیومون</div>
+        `;
+        document.body.appendChild(wrap);
+        try {
+          const canvas = await html2canvas(wrap, {scale:2, backgroundColor:'#FEFBF6', useCORS:true});
+          const {jsPDF} = window.jspdf;
+          const pdf = new jsPDF('p','mm','a4');
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = 10;
+          const imgW = pageW - margin*2;
+          const imgH = canvas.height * imgW / canvas.width;
+          let heightLeft = imgH;
+          let position = margin;
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData,'PNG',margin,position,imgW,imgH);
+          heightLeft -= (pageH - margin*2);
+          while(heightLeft > 0){
+            position = margin - (imgH - heightLeft);
+            pdf.addPage();
+            pdf.addImage(imgData,'PNG',margin,position,imgW,imgH);
+            heightLeft -= (pageH - margin*2);
+          }
+          pdf.save(`hesabyar_${currentProject}.pdf`);
+          showToast("PDF ذخیره شد ✅");
+        } catch(e){
+          console.error(e);
+          showToast("خطا در ساخت PDF");
+        } finally {
+          document.body.removeChild(wrap);
+        }
     }
     function exportCSV(){
         const items=projects[currentProject]?.items||[];
-        if(!items.length){ alert("هیچ داده‌ای نیست"); return; }
+        if(!items.length){ showToast("هیچ داده‌ای نیست"); return; }
         let rows=[["نام","مقدار","واحد","قیمت واحد","هزینه"]];
         items.forEach(it=>{
             let u=it.unit==='m2'?"متر مربع":it.unit==='meter'?"متر طول":it.unit==='piece'?"عدد":it.unit==='kg'?"کیلوگرم":it.unit==='g'?"گرم":it.unit==='ton'?"تن":it.unit;
@@ -980,19 +1401,19 @@
         const a=document.createElement('a');
         const url=URL.createObjectURL(blob); a.href=url;
         a.download=`hesabyar_${currentProject}.csv`; a.click();
-        URL.revokeObjectURL(url); alert("CSV گرفته شد");
+        URL.revokeObjectURL(url); showToast("CSV گرفته شد");
     }
     async function shareReport(){
         const items=projects[currentProject]?.items||[];
-        if(!items.length){ alert("متریالی وجود ندارد"); return; }
+        if(!items.length){ showToast("متریالی وجود ندارد"); return; }
         const total=updateTotal();
         const percentStr = await showPrompt('درصد سود برای اشتراک', '30');
         if(percentStr===null) return;
         const percent = percentStr;
         const profit=total*parseFloat(percent)/100;
         const finalPrice=total+profit;
-        const shareText=`📊 گزارش پروژه ${currentProject}\nتاریخ: ${toJalaliString(projects[currentProject].updatedAt)}\nهزینه کل: ${formatToman(total)} تومان\nسود (${percent}%): ${formatToman(profit)} تومان\nقیمت فروش: ${formatToman(finalPrice)} تومان`;
-        if(navigator.share){ navigator.share({title:"حساب یار",text:shareText}); } else { alert(shareText); }
+        const shareText=`📊 گزارش پروژه ${currentProject}\nتاریخ: ${toJalaliString(projects[currentProject].updatedAt)}\nهزینه کل: ${formatToman(total)} ${getCurrencyUnit()}\nسود (${percent}%): ${formatToman(profit)} ${getCurrencyUnit()}\nقیمت فروش: ${formatToman(finalPrice)} ${getCurrencyUnit()}`;
+        if(navigator.share){ navigator.share({title:"حساب یار",text:shareText}); } else { showToast(shareText); }
     }
 
     // ---------- Backup ----------
@@ -1010,7 +1431,7 @@
         const url=URL.createObjectURL(blob); a.href=url;
         a.download=`hesabyar_backup_${new Date().toISOString().slice(0,10)}.json`;
         a.click(); URL.revokeObjectURL(url);
-        alert("پشتیبان ذخیره شد");
+        showToast("پشتیبان ذخیره شد");
         refreshBackupLog();
     }
     function restoreFromFile(file){
@@ -1027,10 +1448,10 @@
                         if(data.license){
                             try{ localStorage.setItem("hesabyar_license", typeof data.license === 'string' ? data.license : JSON.stringify(data.license)); loadLicense(); }catch(_){}
                         }
-                        alert("بازیابی موفق");
+                        showToast("بازیابی موفق");
                     }
                 } else throw new Error();
-            } catch(err){ alert("فایل نامعتبر"); }
+            } catch(err){ showToast("فایل نامعتبر"); }
         };
         reader.readAsText(file);
     }
@@ -1054,16 +1475,16 @@
     function autoRestore(){
         try{
             const backups = JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]');
-            if(!backups.length){ alert('پشتیبان خودکاری یافت نشد'); return; }
+            if(!backups.length){ showToast('پشتیبان خودکاری یافت نشد'); return; }
             const b = backups[0];
             if(confirm('بازیابی آخرین پشتیبان خودکار؟\nتاریخ: ' + toJalaliString(b.ts))){
                 projects = migrateOldProjects(b.projects);
                 saveAll(); renderProjectList();
                 currentProject=Object.keys(projects)[0];
                 loadProjectToUI();
-                alert('بازیابی شد');
+                showToast('بازیابی شد');
             }
-        }catch(e){ alert('خطا'); }
+        }catch(e){ showToast('خطا'); }
     }
 
     // ============================================================
@@ -1222,35 +1643,6 @@
         });
     }
 
-    function renderMyTemplates() {
-        const container = document.getElementById('myTemplatesList');
-        if(!container) return;
-        const keys = Object.keys(myTemplates);
-        if(!keys.length) {
-            container.innerHTML = '<div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید.</div>';
-            return;
-        }
-        container.innerHTML = '';
-        keys.forEach(id => {
-            const t = myTemplates[id];
-            const activeCount = t.items.filter(i=>i.active).length;
-            const div = document.createElement('div');
-            div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; background:#F8F4ED; border:1px solid #E6D5A8; border-right:4px solid #C9A03D; border-radius:16px; padding:10px 14px; margin-bottom:8px;';
-            div.innerHTML = `
-                <div>
-                    <strong style="font-size:14px; color:#1E3A2F;">${t.name}</strong>
-                    <div class="muted">${activeCount} آیتم فعال از ${t.items.length}</div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                    <button onclick="openEditTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#556B5F; color:white; font-size:12px;">✏️</button>
-                    <button onclick="deleteMyTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#9E5A4A; color:white; font-size:12px;">🗑️</button>
-                    <button onclick="createProjectFromTemplate('${id}')" style="width:auto; padding:6px 12px; border-radius:14px; background:#C9A03D; color:#1E3A2F; font-size:12px; white-space:nowrap;">🚀 پروژه</button>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    }
-
     async function copyMasterTemplate(childId) {
         let found = null;
         MASTER_TEMPLATES.forEach(g => { g.children.forEach(c => { if(c.id === childId) found = c; }); });
@@ -1258,9 +1650,15 @@
         const newId = 'tpl_' + Date.now();
         const newName = await showPrompt('نام قالب شخصی جدید:', found.name);
         if(!newName) return;
+        
+        let category = await showPrompt('دسته‌بندی این الگو (موجود را انتخاب یا جدید بنویسید):', '', Array.from(new Set([...getProjectCategorySuggestions(), ...((typeof customTemplates!=='undefined'&&customTemplates)?customTemplates.map(t=>t.category||'عمومی'):[])])).sort((a, b) => a.localeCompare(b, 'fa')));
+        if (!category) category = 'عمومی';
+        category = category.trim();
+        
         myTemplates[newId] = {
             name: newName.trim(),
             basedOn: found.name,
+            category: category,
             items: found.items.map(item => ({...item, active: true}))
         };
         saveMyTemplates();
@@ -1322,11 +1720,11 @@
         const t = myTemplates[id];
         if(!t) return;
         const activeItems = t.items.filter(i => i.active);
-        if(!activeItems.length) { alert('هیچ آیتم فعالی در این قالب نیست'); return; }
+        if(!activeItems.length) { showToast('هیچ آیتم فعالی در این قالب نیست'); return; }
         let projName = await showPrompt('نام پروژه جدید:', t.name + ' – ' + toJalaliString(new Date()));
         if(!projName) return;
         projName = projName.trim();
-        if(!projName || projects[projName]) { alert('نام تکراری یا نامعتبر'); return; }
+        if(!projName || projects[projName]) { showToast('نام تکراری یا نامعتبر'); return; }
         projects[projName] = {
             items: activeItems.map(item => ({ name: item.name, unit: item.unit, unitPrice: 0, quantity: 0, cost: 0 })),
             createdAt: nowISO(), updatedAt: nowISO()
@@ -1338,7 +1736,7 @@
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
         document.querySelector('[data-tab="projects"]').classList.add('active');
         document.getElementById('projectsPanel').classList.add('active-panel');
-        alert('پروژه «' + projName + '» با ' + activeItems.length + ' آیتم ایجاد شد. قیمت‌ها را وارد کنید.');
+        showToast('پروژه «' + projName + '» با ' + activeItems.length + ' آیتم ایجاد شد. قیمت‌ها را وارد کنید.');
     }
 
     document.getElementById('addTemplateItemBtn')?.addEventListener('click', () => {
@@ -1346,7 +1744,7 @@
         const nameEl = document.getElementById('newTemplateItemName');
         const unitEl = document.getElementById('newTemplateItemUnit');
         const name = nameEl.value.trim();
-        if(!name) { alert('نام آیتم را وارد کنید'); return; }
+        if(!name) { showToast('نام آیتم را وارد کنید'); return; }
         myTemplates[editingTemplateId].items.push({ name, unit: unitEl.value, active: true });
         nameEl.value = '';
         renderEditTemplateItems();
@@ -1355,7 +1753,7 @@
     document.getElementById('saveTemplateBtn')?.addEventListener('click', () => {
         if(!editingTemplateId) return;
         const newName = document.getElementById('editTemplateName').value.trim();
-        if(!newName) { alert('نام قالب را وارد کنید'); return; }
+        if(!newName) { showToast('نام قالب را وارد کنید'); return; }
         myTemplates[editingTemplateId].name = newName;
         saveMyTemplates();
         renderMyTemplates();
@@ -1378,22 +1776,406 @@
     loadMyTemplates();
     renderMasterTemplates();
     renderMyTemplates();
+    try { renderProjectTemplatesList(); } catch(e){}
+
+    // ---------- افزونه مدیریت زیرتب‌های قالب (📦 قالب‌های من / 📁 پروژه‌های من) ----------
+    function showSubTab(tabName) {
+        document.querySelectorAll('.sub-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        
+        if (tabName === 'myTemplates') {
+            document.getElementById('subPanelMyTemplates').style.display = 'block';
+            document.getElementById('subTabMyTemplates').classList.add('active');
+            renderMyTemplates();
+        } else if (tabName === 'myProjects') {
+            document.getElementById('subPanelMyProjects').style.display = 'block';
+            document.getElementById('subTabMyProjects').classList.add('active');
+            renderProjectTemplatesList();
+        }
+    }
+
+    function filterTemplatesAndProjects() {
+        renderMyTemplates();
+        renderProjectTemplatesList();
+    }
+
+    function renderMyTemplates() {
+        const container = document.getElementById('myTemplatesList');
+        if(!container) return;
+        const keys = Object.keys(myTemplates);
+        if(!keys.length) {
+            container.innerHTML = '<div class="empty-state">هنوز قالب شخصی ندارید.<br>از قالب‌های مادر کپی بگیرید یا پروژه‌های خود را ذخیره کنید.</div>';
+            return;
+        }
+        
+        const searchQuery = (document.getElementById('templatesSearchInp').value || '').trim().toLowerCase();
+        
+        container.innerHTML = '';
+        
+        // Group templates by category
+        const grouped = {};
+        keys.forEach(id => {
+            const t = myTemplates[id];
+            const cat = t.category || "عمومی";
+            
+            // Check search query
+            const matchesSearch = !searchQuery || 
+                t.name.toLowerCase().includes(searchQuery) || 
+                cat.toLowerCase().includes(searchQuery) ||
+                (t.items && t.items.some(it => it.name.toLowerCase().includes(searchQuery)));
+                
+            if (matchesSearch) {
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push({ id, template: t });
+            }
+        });
+        
+        const groupKeys = Object.keys(grouped);
+        if (groupKeys.length === 0) {
+            container.innerHTML = '<div class="empty-state">الگویی مطابق با جستجوی شما یافت نشد.</div>';
+            return;
+        }
+        
+        groupKeys.forEach(cat => {
+            const details = document.createElement('details');
+            details.style.cssText = 'margin-bottom:10px; background:var(--card-bg); border:1px solid var(--primary); border-radius:16px; padding:10px;';
+            details.setAttribute('open', 'true');
+            
+            const summary = document.createElement('summary');
+            summary.style.cssText = 'font-weight:bold; cursor:pointer; color:var(--text-dark); outline:none; font-size:13px;';
+            summary.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span>📁 دسته الگو: ${cat}</span>
+                    <span class="pill" style="margin:0 5px;">${grouped[cat].length} الگو</span>
+                </div>
+            `;
+            details.appendChild(summary);
+            
+            const listDiv = document.createElement('div');
+            listDiv.style.marginTop = '10px';
+            
+            grouped[cat].forEach(item => {
+                const id = item.id;
+                const t = item.template;
+                const activeCount = t.items.filter(i=>i.active).length;
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; background:#F8F4ED; border:1px solid #E6D5A8; border-right:4px solid #C9A03D; border-radius:16px; padding:10px 14px; margin-bottom:8px;';
+                div.innerHTML = `
+                    <div style="flex:1; padding-left:10px; text-align:right;">
+                        <strong style="font-size:14px; color:#1E3A2F; display:block;">${t.name}</strong>
+                        <div class="muted" style="font-size:11px;">شامل ${activeCount} آیتم فعال از ${t.items.length}</div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button onclick="openEditTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#556B5F; color:white; font-size:12px; border:none; cursor:pointer;">✏️</button>
+                        <button onclick="deleteMyTemplate('${id}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#9E5A4A; color:white; font-size:12px; border:none; cursor:pointer;">🗑️</button>
+                        <button onclick="createProjectFromTemplate('${id}')" style="width:auto; padding:6px 12px; border-radius:14px; background:#C9A03D; color:#1E3A2F; font-size:12px; white-space:nowrap; border:none; cursor:pointer;">🚀 پروژه</button>
+                    </div>
+                `;
+                listDiv.appendChild(div);
+            });
+            details.appendChild(listDiv);
+            container.appendChild(details);
+        });
+    }
+
+    function renderProjectTemplatesList() {
+        const container = document.getElementById('projectTemplatesList');
+        if(!container) return;
+        
+        const pNames = Object.keys(projects);
+        if(pNames.length === 0) {
+            container.innerHTML = '<div class="empty-state">پروژه‌ای برای نمایش وجود ندارد.</div>';
+            return;
+        }
+        
+        const searchQuery = ((document.getElementById('projectsSearchInp')?.value) || (document.getElementById('templatesSearchInp')?.value) || '').trim().toLowerCase();
+        const sortMode = document.getElementById('projectsSortSelect')?.value || 'updated_desc';
+        
+        container.innerHTML = '';
+        
+        // Group projects by category
+        const grouped = {};
+        pNames.forEach(name => {
+            const proj = projects[name];
+            const cat = proj.category || "عمومی";
+            
+            // Check search query
+            const matchesSearch = !searchQuery || 
+                name.toLowerCase().includes(searchQuery) || 
+                cat.toLowerCase().includes(searchQuery) ||
+                (proj.items && proj.items.some(it => it.name.toLowerCase().includes(searchQuery)));
+                
+            if (matchesSearch) {
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push({ name, proj });
+            }
+        });
+        
+        // مرتب‌سازی داخل هر دسته
+        const cmp = {
+            name_asc:  (a,b)=> a.name.localeCompare(b.name,'fa'),
+            name_desc: (a,b)=> b.name.localeCompare(a.name,'fa'),
+            created_asc:  (a,b)=> new Date(a.proj.createdAt||0) - new Date(b.proj.createdAt||0),
+            created_desc: (a,b)=> new Date(b.proj.createdAt||0) - new Date(a.proj.createdAt||0),
+            updated_asc:  (a,b)=> new Date(a.proj.updatedAt||0) - new Date(b.proj.updatedAt||0),
+            updated_desc: (a,b)=> new Date(b.proj.updatedAt||0) - new Date(a.proj.updatedAt||0),
+        }[sortMode] || ((a,b)=>0);
+        Object.keys(grouped).forEach(k => grouped[k].sort(cmp));
+        
+        const groupKeys = Object.keys(grouped).sort((a,b)=>a.localeCompare(b,'fa'));
+        if (groupKeys.length === 0) {
+            container.innerHTML = '<div class="empty-state">پروژه‌ای مطابق با جستجوی شما یافت نشد.</div>';
+            return;
+        }
+        
+        groupKeys.forEach(cat => {
+            const details = document.createElement('details');
+            details.style.cssText = 'margin-bottom:10px; background:var(--card-bg); border:1px solid var(--primary); border-radius:16px; padding:10px;';
+            details.setAttribute('open', 'true');
+            
+            const summary = document.createElement('summary');
+            summary.style.cssText = 'font-weight:bold; cursor:pointer; color:var(--text-dark); outline:none; font-size:13px;';
+            summary.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span>📁 دسته پروژه: ${cat}</span>
+                    <span class="pill" style="margin:0 5px;">${grouped[cat].length} پروژه</span>
+                </div>
+            `;
+            details.appendChild(summary);
+            
+            const listDiv = document.createElement('div');
+            listDiv.style.marginTop = '10px';
+            
+            grouped[cat].forEach(item => {
+                const pName = item.name;
+                const proj = item.proj;
+                const div = document.createElement('div');
+                div.style.cssText = 'background:#F8F4ED; border:1px solid #E6D5A8; border-right:4px solid #556B5F; border-radius:16px; padding:10px 14px; margin-bottom:8px;';
+                div.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="toggleProjectDetails('${makeSafeId(pName)}')">
+                        <div style="flex:1; padding-left:10px; text-align:right;">
+                            <strong style="font-size:14px; color:#1E3A2F;">📁 پروژه: ${pName}</strong>
+                            <div class="muted" style="font-size:11px;">شامل ${proj.items.length} آیتم • آخرین ویرایش: ${new Date(proj.updatedAt||proj.createdAt||Date.now()).toLocaleString('fa-IR')}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
+                            <button onclick="event.stopPropagation(); editProjectFromTemplatesTab('${escapeStr(pName)}')" style="width:auto; padding:6px 12px; border-radius:14px; background:#556B5F; color:white; font-size:12px; white-space:nowrap; border:none; cursor:pointer;" title="ورود و ویرایش">✏️</button>
+                            <button onclick="event.stopPropagation(); deleteProjectFromTemplatesTab('${escapeStr(pName)}')" style="width:auto; padding:6px 10px; border-radius:14px; background:#9E5A4A; color:white; font-size:12px; border:none; cursor:pointer;" title="حذف پروژه">🗑️</button>
+                        </div>
+                    </div>
+                    <div id="details_${makeSafeId(pName)}" class="project-details-box" style="display:none; margin-top:10px; border-top:1px dashed #C9A03D; padding-top:8px; font-size:12px; line-height:1.6; color:var(--text-dark); text-align:right;">
+                        ${renderProjectItemsHTML(proj)}
+                    </div>
+                `;
+                listDiv.appendChild(div);
+            });
+            details.appendChild(listDiv);
+            container.appendChild(details);
+        });
+    }
+
+    function toggleProjectDetails(id) {
+        const el = document.getElementById('details_' + id);
+        if (!el) return;
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function renderProjectItemsHTML(proj) {
+        if (!proj.items || proj.items.length === 0) {
+            return '<p class="muted" style="text-align:center; padding:10px 0;">هیچ آیتمی در این پروژه ثبت نشده است.</p>';
+        }
+        let html = '<ul style="padding-right: 20px; list-style-type: square; color:#1E3A2F; font-weight: bold; margin-top:5px; margin-bottom:5px; text-align:right; direction:rtl;">';
+        proj.items.forEach(it => {
+            let unitText = { m2: 'متر مربع', meter: 'متر طول', piece: 'عدد', kg: 'کیلوگرم', g: 'گرم', ton: 'تن' }[it.unit] || it.unit;
+            html += `<li>${it.name}: ${formatNumber(it.quantity)} ${unitText} × ${formatToman(it.unitPrice)} ${getCurrencyUnit()}</li>`;
+        });
+        html += '</ul>';
+        return html;
+    }
+
+    function editProjectFromTemplatesTab(pName) {
+        const proj = projects[pName];
+        if (!proj) return;
+        currentProject = pName;
+        
+        renderProjectList();
+        loadProjectToUI();
+        
+        // Switch to the main projects tab
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
+        document.querySelector('[data-tab="projects"]').classList.add('active');
+        document.getElementById('projectsPanel').classList.add('active-panel');
+    }
+
+    function deleteProjectFromTemplatesTab(pName) {
+        if(Object.keys(projects).length===1){ showToast("آخرین پروژه قابل حذف نیست"); return; }
+        if(confirm(`آیا از حذف پروژه "${pName}" مطمئن هستید؟`)) {
+            delete projects[pName];
+            if (currentProject === pName) {
+                currentProject = Object.keys(projects)[0];
+            }
+            saveAll();
+            renderProjectList();
+            loadProjectToUI();
+            renderProjectTemplatesList(); // Refresh this list too!
+        }
+    }
+
+    // ---------- بازیابی نسخه‌های پشتیبان ----------
+    function getSnapshots(){
+        try { return JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]'); } catch(e){ return []; }
+    }
+    function openSnapshotsModal(){
+        renderSnapshotsList();
+        document.getElementById('snapshotsModal').style.display = 'flex';
+    }
+    function renderSnapshotsList(){
+        const container = document.getElementById('snapshotsList');
+        if(!container) return;
+        const snaps = getSnapshots();
+        if(!snaps.length){
+            container.innerHTML = '<div class="empty-state">هنوز نسخه‌ی پشتیبانی ثبت نشده است.<br>پشتیبان‌ها قبل از هر ذخیره به‌صورت خودکار ساخته می‌شوند.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        snaps.forEach((snap, idx) => {
+            const pCount = Object.keys(snap.projects || {}).length;
+            const itemCount = Object.values(snap.projects || {}).reduce((s,p)=> s + ((p && p.items)? p.items.length : 0), 0);
+            const dt = new Date(snap.ts);
+            const div = document.createElement('div');
+            div.style.cssText = 'background:#F8F4ED; border:1px solid #E6D5A8; border-right:4px solid #C9A03D; border-radius:14px; padding:10px 12px; margin-bottom:8px;';
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                    <div style="flex:1; text-align:right;">
+                        <strong style="font-size:13px; color:#1E3A2F;">نسخه #${idx+1} ${idx===0?'(آخرین):':''}</strong>
+                        <div class="muted" style="font-size:11px;">${dt.toLocaleString('fa-IR')} • ${pCount} پروژه • ${itemCount} آیتم</div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button onclick="previewSnapshot(${idx})" style="width:auto; padding:6px 10px; border-radius:14px; background:#556B5F; color:white; font-size:11px; border:none; cursor:pointer;">👁 پیش‌نمایش</button>
+                        <button onclick="restoreSnapshot(${idx})" style="width:auto; padding:6px 10px; border-radius:14px; background:#C9A03D; color:#1E3A2F; font-size:11px; border:none; cursor:pointer; font-weight:bold;">⏮️ بازگردانی</button>
+                        <button onclick="deleteSnapshot(${idx})" style="width:auto; padding:6px 10px; border-radius:14px; background:#9E5A4A; color:white; font-size:11px; border:none; cursor:pointer;">🗑️</button>
+                    </div>
+                </div>
+                <div id="snapPreview_${idx}" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #C9A03D; font-size:11px; color:#1E3A2F; text-align:right;"></div>
+            `;
+            container.appendChild(div);
+        });
+    }
+    function previewSnapshot(idx){
+        const snaps = getSnapshots();
+        const snap = snaps[idx];
+        const el = document.getElementById('snapPreview_'+idx);
+        if(!snap || !el) return;
+        if(el.style.display === 'block'){ el.style.display = 'none'; return; }
+        let html = '<ul style="padding-right:18px; list-style:square; line-height:1.7;">';
+        for(const name in snap.projects){
+            const p = snap.projects[name];
+            html += `<li><strong>${name}</strong> — ${(p.items||[]).length} آیتم</li>`;
+        }
+        html += '</ul>';
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+    function restoreSnapshot(idx){
+        const snaps = getSnapshots();
+        const snap = snaps[idx];
+        if(!snap){ showToast('نسخه یافت نشد'); return; }
+        if(!confirm('بازگردانی این نسخه؟ وضعیت فعلی به‌عنوان پشتیبان نگه داشته می‌شود.')) return;
+        try{
+            // ذخیره وضعیت فعلی به‌عنوان پشتیبان قبل از بازگردانی
+            saveAll();
+            projects = JSON.parse(JSON.stringify(snap.projects));
+            if(!projects[currentProject]) currentProject = Object.keys(projects)[0] || '';
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+            renderProjectList(); loadProjectToUI();
+            try{ renderProjectTemplatesList(); }catch(_){}
+            document.getElementById('snapshotsModal').style.display = 'none';
+            showToast('✅ نسخه بازگردانی شد');
+        }catch(e){
+            alert('❌ خطای بازگردانی: ' + (e.message||e));
+        }
+    }
+    function deleteSnapshot(idx){
+        if(!confirm('حذف این نسخه‌ی پشتیبان؟')) return;
+        const snaps = getSnapshots();
+        snaps.splice(idx, 1);
+        localStorage.setItem(BACKUP_KEY, JSON.stringify(snaps));
+        renderSnapshotsList();
+    }
+
+    function makeSafeId(str) {
+        return 'id_' + str.replace(/[^a-zA-Z0-9آ-ی]/g, '_');
+    }
+
+    function escapeStr(str) {
+        return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
 
     // ---------- جایگزین prompt() برای WebView ----------
-    function showPrompt(title, defaultVal = '') {
+    function showPrompt(title, defaultVal = '', suggestions = null) {
         return new Promise(resolve => {
             document.getElementById('inputModalTitle').textContent = title;
             const field = document.getElementById('inputModalField');
             field.value = defaultVal;
+            const dl = document.getElementById('inputModalSuggestions');
+            const listBox = document.getElementById('inputModalSuggestionList');
+            const suggestionItems = Array.isArray(suggestions)
+                ? Array.from(new Set(suggestions.map(v => String(v || '').trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'fa'))
+                : [];
+            if (dl) {
+                dl.innerHTML = '';
+                if (suggestionItems.length) {
+                    suggestionItems.forEach(v => {
+                        const o = document.createElement('option');
+                        o.value = v;
+                        dl.appendChild(o);
+                    });
+                }
+            }
+            function renderSuggestions() {
+                if (!listBox) return;
+                if (!suggestionItems.length) {
+                    listBox.style.display = 'none';
+                    listBox.innerHTML = '';
+                    return;
+                }
+                const q = field.value.trim().toLowerCase();
+                const filtered = suggestionItems.filter(v => !q || v.toLowerCase().includes(q));
+                if (!filtered.length) {
+                    listBox.style.display = 'none';
+                    listBox.innerHTML = '';
+                    return;
+                }
+                listBox.innerHTML = filtered.map(v => `<button type="button" class="input-suggestion-row" data-value="${String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}">📂 ${String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</button>`).join('');
+                listBox.style.display = 'block';
+            }
+            function onSuggestClick(e) {
+                const btn = e.target.closest('.input-suggestion-row');
+                if (!btn) return;
+                field.value = btn.dataset.value || '';
+                renderSuggestions();
+                field.focus();
+                const len = field.value.length;
+                try { field.setSelectionRange(len, len); } catch(_) {}
+            }
             document.getElementById('inputModal').style.display = 'flex';
-            setTimeout(() => field.focus(), 100);
+            renderSuggestions();
+            setTimeout(() => {
+                field.focus();
+                if (defaultVal) field.select();
+                else try { field.setSelectionRange(0, 0); } catch(_) {}
+                renderSuggestions();
+            }, 100);
             const ok = document.getElementById('inputModalOk');
             const cancel = document.getElementById('inputModalCancel');
             function cleanup(val) {
                 document.getElementById('inputModal').style.display = 'none';
+                if (listBox) { listBox.style.display = 'none'; listBox.innerHTML = ''; }
                 ok.removeEventListener('click', onOk);
                 cancel.removeEventListener('click', onCancel);
                 field.removeEventListener('keydown', onKey);
+                field.removeEventListener('input', renderSuggestions);
+                listBox?.removeEventListener('click', onSuggestClick);
             }
             function onOk() { const v = field.value.trim(); cleanup(); resolve(v || null); }
             function onCancel() { cleanup(); resolve(null); }
@@ -1401,10 +2183,12 @@
             ok.addEventListener('click', onOk);
             cancel.addEventListener('click', onCancel);
             field.addEventListener('keydown', onKey);
+            field.addEventListener('input', renderSuggestions);
+            listBox?.addEventListener('click', onSuggestClick);
         });
     }
 
-    // ---------- ماشین حساب حرفه‌ای v3.2 ----------
+    // ---------- ماشین حساب حرفه‌ای v3.6 ----------
     (function(){
         let calcMemory = 0, calcCurrentRaw = "0", calcOperator = null, calcPrevious = null, shouldReset = false, historyStr = "";
         const displayEl = document.getElementById('calcDisplay'), 
@@ -1592,9 +2376,9 @@
                     }
                     projects[newName] = data.data; currentProject = newName;
                     saveAll(); renderProjectList(); loadProjectToUI();
-                    alert("پروژه با موفقیت وارد شد");
+                    showToast("پروژه با موفقیت وارد شد");
                 } else throw new Error();
-            } catch(err) { alert("فایل پروژه نامعتبر است"); }
+            } catch(err) { showToast("فایل پروژه نامعتبر است"); }
         };
         reader.readAsText(file);
     }
@@ -1602,7 +2386,7 @@
     // ---------- تنظیم درصدی قیمت‌ها ----------
     function openAdjustPrices() {
         const items = projects[currentProject]?.items || [];
-        if(!items.length) { alert('ابتدا آیتم اضافه کنید'); return; }
+        if(!items.length) { showToast('ابتدا آیتم اضافه کنید'); return; }
         const container = document.getElementById('adjustItemsList');
         container.innerHTML = '';
         items.forEach((item, idx) => {
@@ -1613,7 +2397,7 @@
                 <div style="flex:1;">
                     <strong style="font-size:13px; color:#1E3A2F;">${item.name}</strong>
                 </div>
-                <span style="font-size:12px; color:#556B5F;">${formatToman(item.unitPrice)} تومان</span>
+                <span style="font-size:12px; color:#556B5F;">${formatToman(item.unitPrice)} ${getCurrencyUnit()}</span>
             `;
             container.appendChild(div);
         });
@@ -1623,7 +2407,7 @@
 
     function applyAdjust(allProjects) {
         const percent = parseFloat(toEnglishNumber(document.getElementById('adjustPercent').value));
-        if(isNaN(percent) || percent <= 0) { alert('درصد معتبر وارد کنید'); return; }
+        if(isNaN(percent) || percent <= 0) { showToast('درصد معتبر وارد کنید'); return; }
         const direction = document.getElementById('adjustDirection').value;
         const multiplier = direction === 'increase' ? (1 + percent/100) : (1 - percent/100);
         const checks = document.querySelectorAll('.adjust-check');
@@ -1634,7 +2418,7 @@
                 selectedNames.push(projects[currentProject].items[idx].name);
             }
         });
-        if(!selectedNames.length) { alert('حداقل یک آیتم انتخاب کنید'); return; }
+        if(!selectedNames.length) { showToast('حداقل یک آیتم انتخاب کنید'); return; }
 
         // اعمال روی پروژه جاری
         selectedNames.forEach(name => {
@@ -1664,7 +2448,7 @@
         saveAll(); loadProjectToUI();
         document.getElementById('adjustPricesModal').style.display = 'none';
         const scope = allProjects ? 'در همه پروژه‌ها' : 'در این پروژه';
-        alert(`✅ ${selectedNames.length} آیتم ${scope} ${direction === 'increase' ? 'افزایش' : 'کاهش'} ${percent}٪ پیدا کرد.`);
+        showToast(`✅ ${selectedNames.length} آیتم ${scope} ${direction === 'increase' ? 'افزایش' : 'کاهش'} ${percent}٪ پیدا کرد.`);
     }
 
     document.getElementById('adjustPricesBtn')?.addEventListener('click', openAdjustPrices);
@@ -1706,21 +2490,21 @@
     document.getElementById('activateBtn')?.addEventListener('click', ()=>{
         const customer = document.getElementById('licCustomer').value.trim();
         const code = document.getElementById('licCode').value.trim().toUpperCase();
-        if(!customer || !code){ alert('نام و کد را وارد کنید'); return; }
+        if(!customer || !code){ showToast('نام و کد را وارد کنید'); return; }
         
         const res = checkLicenseDetails(customer, code);
         if(res.valid){
             if(res.expired){
-                alert('⚠️ این کد فعال‌سازی منقضی شده است! (تاریخ انقضا: ' + res.endDate + ')');
+                showToast('⚠️ این کد فعال‌سازی منقضی شده است! (تاریخ انقضا: ' + res.endDate + ')');
                 saveLicense(customer, code);
                 loadLicense();
             } else {
                 saveLicense(customer, code);
                 loadLicense();
-                alert('✅ فعال‌سازی موفق! نسخه کامل فعال شد (اعتبار: ' + res.endDate + ').');
+                showToast('✅ فعال‌سازی موفق! نسخه کامل فعال شد (اعتبار: ' + res.endDate + ').');
             }
         } else {
-            alert('❌ کد نامعتبر است');
+            showToast('❌ کد نامعتبر است');
         }
     });
     document.getElementById('deactivateBtn')?.addEventListener('click', ()=>{
@@ -1737,6 +2521,7 @@
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         if(tabId==='projects') loadProjectToUI();
+        if(tabId==='templates') { loadMyTemplates(); showSubTab('myTemplates'); }
         if(tabId==='backup') refreshBackupLog();
     }));
     document.getElementById('themeToggleBtn').addEventListener('click',()=>{
@@ -1773,5 +2558,167 @@
       splash.addEventListener('click', hideSplash);
     })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c10b3dbe335f18',t:'MTc4MTUyMDk0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0d83bb34ee36fa6',t:'MTc4MTc2NDA5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c10b3dbe335f18',t:'MTc4MTUyMDk0MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0d83bb34ee36fa6',t:'MTc4MTc2NDA5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0fc20f19f1dd0a3',t:'MTc4MjE0MDQ5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+function showToast(msg){
+ let t=document.getElementById('toastMsg');
+ if(!t){t=document.createElement('div');t.id='toastMsg';t.className='toast';document.body.appendChild(t);}
+ t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2500);
+}
+
+function showConfirmModal(msg){
+ return new Promise(resolve=>{
+   const ok = window.confirm(msg);
+   resolve(ok);
+ });
+}
+
+</script>
+<script>
+// v3.6.2 safety: persistent save of in-progress edits
+document.addEventListener('input', function(e){
+  try {
+    if(e.target && (e.target.id==='itemName'||e.target.id==='unitPrice'||e.target.id==='quantity')){
+      const draft={
+        name:document.getElementById('itemName')?.value||'',
+        unit:document.getElementById('unit')?.value||'',
+        unitPrice:document.getElementById('unitPrice')?.value||'',
+        quantity:document.getElementById('quantity')?.value||''
+      };
+      localStorage.setItem('hesabyar_draft', JSON.stringify(draft));
+    }
+  } catch(_){}
+}, true);
+// Persist projects before unload as last-resort
+window.addEventListener('beforeunload', function(){
+  try { if(typeof saveAll==='function') saveAll(); } catch(_){}
+});
+
+
+// ============================================================
+// تنظیمات: واحد پولی + اندازه فونت  +  جستجوی سراسری پروژه‌ها
+// ============================================================
+function applyCurrencyLabels(){
+    try{
+        document.querySelectorAll('.cur-label').forEach(el => el.textContent = getCurrencyUnit());
+        if(typeof updateTotal === 'function') updateTotal();
+        if(typeof loadProjectToUI === 'function') loadProjectToUI();
+    }catch(_){}
+}
+function changeCurrency(newCur){
+    try{
+        const cur = getCurrencyMode();
+        if(cur === newCur){ applyCurrencyLabels(); return; }
+        const factor = (newCur === 'rial') ? 10 : 0.1;
+        for(const p in projects){
+            const proj = projects[p];
+            if(proj && Array.isArray(proj.items)){
+                proj.items.forEach(it => {
+                    if(typeof it.unitPrice === 'number') it.unitPrice = Math.round(it.unitPrice * factor);
+                    if(typeof it.cost === 'number')      it.cost      = Math.round(it.cost * factor);
+                });
+            }
+        }
+        localStorage.setItem('hesabyar_currency', newCur);
+        if(typeof saveAll === 'function') saveAll();
+        applyCurrencyLabels();
+        if(typeof showToast === 'function') showToast('واحد پولی تغییر کرد: ' + getCurrencyUnit());
+    }catch(e){ console.error(e); }
+}
+function changeFontSize(size){
+    try{
+        document.body.classList.remove('fs-default','fs-medium','fs-large');
+        if(size === 'medium') document.body.classList.add('fs-medium');
+        else if(size === 'large') document.body.classList.add('fs-large');
+        localStorage.setItem('hesabyar_fontsize', size);
+    }catch(_){}
+}
+function initSettings(){
+    try{
+        const cur = localStorage.getItem('hesabyar_currency') || 'toman';
+        const fs  = localStorage.getItem('hesabyar_fontsize') || 'default';
+        const cs = document.getElementById('currencySelect'); if(cs) cs.value = cur;
+        const fss = document.getElementById('fontSizeSelect'); if(fss) fss.value = fs;
+        changeFontSize(fs);
+        applyCurrencyLabels();
+    }catch(_){}
+}
+
+// جستجوی سراسری: همه پروژه‌ها (همه دسته‌ها)
+function runGlobalProjectSearch(){
+    const inp = document.getElementById('globalProjectSearch');
+    const box = document.getElementById('globalSearchResults');
+    if(!inp || !box) return;
+    const q = (inp.value || '').trim().toLowerCase();
+    if(!q){
+        // بدون عبارت جستجو، فهرست ۸ پروژه اخیر را نشان بده
+        const recent = Object.keys(projects).map(n=>({n, p:projects[n]}))
+            .sort((a,b)=> new Date(b.p.updatedAt||0) - new Date(a.p.updatedAt||0)).slice(0,8);
+        if(!recent.length){ box.style.display='none'; box.innerHTML=''; return; }
+        box.innerHTML = recent.map(r=>`<div class="gsr-item" onclick="jumpToProject('${escapeStr(r.n)}')">📁 ${r.n} <span class="muted" style="font-size:10px;">— ${r.p.category||'عمومی'} · ${r.p.items?.length||0} آیتم</span></div>`).join('');
+        box.style.display='block';
+        return;
+    }
+    const matches = [];
+    for(const n in projects){
+        const p = projects[n];
+        const cat = p.category || 'عمومی';
+        const inName = n.toLowerCase().includes(q);
+        const inCat  = cat.toLowerCase().includes(q);
+        const inItem = Array.isArray(p.items) && p.items.some(it=> (it.name||'').toLowerCase().includes(q));
+        if(inName || inCat || inItem){
+            matches.push({n, p, cat, why: inName?'نام':inCat?'دسته':'متریال'});
+        }
+    }
+    if(!matches.length){
+        box.innerHTML = '<div class="gsr-item muted">موردی یافت نشد.</div>';
+        box.style.display='block';
+        return;
+    }
+    box.innerHTML = matches.slice(0,30).map(r=>`<div class="gsr-item" onclick="jumpToProject('${escapeStr(r.n)}')">📁 <strong>${r.n}</strong> <span class="muted" style="font-size:10px;">— ${r.cat} · ${r.p.items?.length||0} آیتم · مطابقت: ${r.why}</span></div>`).join('');
+    box.style.display='block';
+}
+function jumpToProject(name){
+    if(!projects[name]) return;
+    currentProject = name;
+    // دسته را با پروژه هم‌خوان کن
+    try{
+        const cs = document.getElementById('categorySelect');
+        if(cs){ cs.value = projects[name].category || 'عمومی'; }
+    }catch(_){}
+    if(typeof renderProjectList === 'function') renderProjectList();
+    if(typeof loadProjectToUI === 'function') loadProjectToUI();
+    const inp = document.getElementById('globalProjectSearch');
+    const box = document.getElementById('globalSearchResults');
+    if(inp) inp.value = '';
+    if(box){ box.style.display='none'; box.innerHTML=''; }
+    if(typeof showToast === 'function') showToast('پروژه باز شد: ' + name);
+}
+// بستن نتایج با کلیک بیرون
+document.addEventListener('click', function(e){
+    const box = document.getElementById('globalSearchResults');
+    const inp = document.getElementById('globalProjectSearch');
+    if(!box || !inp) return;
+    if(e.target === inp || box.contains(e.target)) return;
+    box.style.display='none';
+});
+
+// اطمینان از تازه‌سازی لیست «پروژه‌های من» با هر بار سوییچ به آن زیرتب
+(function(){
+    const _origShowSubTab = window.showSubTab;
+    if(typeof _origShowSubTab === 'function'){
+        window.showSubTab = function(tabName){
+            _origShowSubTab(tabName);
+            if(tabName === 'myProjects'){
+                try{ renderProjectTemplatesList(); }catch(_){}
+            }
+        };
+    }
+})();
+
+// اجرای اولیه تنظیمات پس از بارگذاری
+window.addEventListener('load', function(){ setTimeout(initSettings, 200); });
+
+</script>
+
+</body>
 </html>
